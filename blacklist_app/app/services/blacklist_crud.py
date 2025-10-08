@@ -12,9 +12,7 @@ class BlacklistCRUD:
             #Hacemos persistencia
             self.session.add(new_blacklist_email)
             self.session.commit()
-
-            return new_blacklist_email
         
         except Exception as e:
             self.session.rollback()
-            raise e
+            return str(e)
