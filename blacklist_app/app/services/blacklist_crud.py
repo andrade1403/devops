@@ -18,4 +18,4 @@ class BlacklistCRUD:
         
         except Exception as e:
             self.session.rollback()
-            return None
+            raise e
