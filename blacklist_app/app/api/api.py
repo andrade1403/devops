@@ -27,14 +27,14 @@ class BlacklistRegister(Resource):
             return jsonify({'msg': 'El appId proporcionado no es un UUID válido'}), 400
         
         #Obtenemos ip del request
-        data = Helper.getIpAddress(data)
+        data = Helper.getIpAddress(data, request)
 
         #Validamos si se pudo obtener la ip
         if not data.get('ipAddress'):
             return jsonify({'msg': 'No se pudo obtener la dirección IP del cliente'}), 400
 
         #Guardamos el email en base de datos
-        salida = blacklist_crud.addEmailToBlacklist(data, request)
+        salida = blacklist_crud.addEmailToBlacklist(data)
 
         #Validamos si hubo un error al guardar en base de datos
         if isinstance(salida, str):
