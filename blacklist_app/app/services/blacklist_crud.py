@@ -1,5 +1,4 @@
-from app.db import db
-from app.db import Blacklist
+from app.db.blacklist_db import db, Blacklist
 
 class BlacklistCRUD:
     def __init__(self):
