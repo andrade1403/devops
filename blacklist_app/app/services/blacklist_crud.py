@@ -2,7 +2,7 @@ from app.db.blacklist_db import db, Blacklist
 
 class BlacklistCRUD:
     def __init__(self):
-        self.session = db
+        self.session = db.session
     
     def addEmailToBlacklist(self, information: dict):
         try:
