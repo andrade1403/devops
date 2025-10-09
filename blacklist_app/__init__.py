@@ -10,7 +10,7 @@ def create_app():
     app = Flask(__name__)
 
     #Ponemos configuraciones de la app
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql+psycopg2://postgres:postgres@database-1.c5gmauekem4x.us-east-1.rds.amazonaws.com:5432/devops'
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql+psycopg2://proyectogrupo10:proyectogrupo10@terraform-20251009023827697300000001.cifuwoics1ov.us-east-1.rds.amazonaws.com:5432/proyect_db'
     app.config['JWT_SECRET_KEY'] = 'supersecretkey'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.config['PROPAGATE_EXCEPTIONS'] = True
