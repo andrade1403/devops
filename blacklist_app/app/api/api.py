@@ -2,11 +2,17 @@ from flask import jsonify
 from flask import request
 from flask_restful import Resource
 from app.utils.helper import Helper
-from flask_jwt_extended import jwt_required
 from app.services.blacklist_crud import BlacklistCRUD
+from flask_jwt_extended import jwt_required, create_access_token
 
 #Creamos instancia del CRUD
 blacklist_crud = BlacklistCRUD()
+
+class BlacklistToken(Resource):
+    def post(self):
+        #Creamos token JWT
+        token = create_access_token(identity = 'blacklist_service')
+        return jsonify({'token': token}), 200
 
 class BlacklistRegister(Resource):
     @jwt_required()
