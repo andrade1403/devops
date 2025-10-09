@@ -1,8 +1,8 @@
 from flask import jsonify
 from flask import request
 from flask_restful import Resource
-from app.utils.helper import Helper
-from app.services.blacklist_crud import BlacklistCRUD
+from blacklist_app.app.utils.helper import Helper
+from blacklist_app.app.services.blacklist_crud import BlacklistCRUD
 from flask_jwt_extended import jwt_required, create_access_token
 
 #Creamos instancia del CRUD
