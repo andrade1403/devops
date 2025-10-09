@@ -3,7 +3,7 @@ from flask_cors import CORS
 from flask_restful import Api
 from app.db.blacklist_db import db
 from flask_jwt_extended import JWTManager
-from app.api.api import BlacklistRegister, BlacklistHealth
+from app.api.api import BlacklistRegister, BlacklistHealth, BlacklistToken
 
 #Creamos la aplicacion de Flask
 app = Flask(__name__)
@@ -36,3 +36,4 @@ jwt = JWTManager(app)
 api = Api(app)
 api.add_resource(BlacklistRegister, '/blacklists')
 api.add_resource(BlacklistHealth, '/blacklists/health')
+api.add_resource(BlacklistToken, '/blacklists/token')
