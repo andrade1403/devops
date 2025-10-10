@@ -16,21 +16,46 @@ class BlacklistToken(Resource):
 class BlacklistRegister(Resource):
     @jwt_required()
     def post(self):
-        #Extraemos datos del request
-        data = request.get_json()
-        
+        #Validamos que el request tenga JSON válido
+        try:
+            data = request.get_json()
+        except Exception:
+            return {'msg': 'El cuerpo de la solicitud debe ser JSON válido'}, 400
+
+        #Validamos que data no sea None
+        if data is None:
+            return {'msg': 'El cuerpo de la solicitud no puede estar vacío'}, 400
+
         #Validamos que todos los campos necesarios esten presentes
         if not all(key in data for key in ('email', 'appId')):
             return {"msg": 'Hay campos necesarios que no están presentes en la solicitud'}, 400
 
+        #Validamos que los campos no estén vacíos
+        if not data.get('email') or not data.get('email').strip():
+            return {'msg': 'El campo email no puede estar vacío'}, 400
+
+        if not data.get('appId') or not data.get('appId').strip():
+            return {'msg': 'El campo appId no puede estar vacío'}, 400
+
         #Validamos que el email tenga un formato correcto
-        if not Helper.validateEmail(data.get('email')):
+        if not Helper.validateEmail(data.get('email').strip()):
             return {'msg': 'El email proporcionado no tiene un formato válido'}, 400
-        
+
         #Validamos que el appId sea un UUID valido
-        if not Helper.validateUUID(data.get('appId')):
+        if not Helper.validateUUID(data.get('appId').strip()):
             return {'msg': 'El appId proporcionado no es un UUID válido'}, 400
-        
+
+        #Validamos la longitud del campo reason si está presente
+        if 'reason' in data and data.get('reason'):
+            if len(data.get('reason').strip()) > 255:
+                return {'msg': 'El campo reason no puede exceder 255 caracteres'}, 400
+
+        #Normalizamos los datos
+        data['email'] = data.get('email').strip().lower()
+        data['appId'] = data.get('appId').strip()
+        if 'reason' in data and data.get('reason'):
+            data['reason'] = data.get('reason').strip()
+
         #Obtenemos ip del request
         data = Helper.getIpAddress(data, request)
 
