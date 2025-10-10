@@ -1,0 +1,943 @@
+{
+	"info": {
+		"_postman_id": "812fdc2d-ac98-4263-80c2-6daf6a67043d",
+		"name": "Pruebas POST - Lista Negra API",
+		"description": "API REST completa con validaciones robustas y scripts de prueba automatizados",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "38979541"
+	},
+	"item": [
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Generar Token JWT",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Validaciones automáticas del token",
+									"pm.test('Response status is 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Response has token property', function () {",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(responseJson).to.have.property('token');",
+									"});",
+									"",
+									"pm.test('Token is a valid string', function () {",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(responseJson.token).to.be.a('string');",
+									"    pm.expect(responseJson.token.length).to.be.greaterThan(0);",
+									"});",
+									"",
+									"pm.test('Token has JWT format', function () {",
+									"    const responseJson = pm.response.json();",
+									"    const tokenParts = responseJson.token.split('.');",
+									"    pm.expect(tokenParts).to.have.lengthOf(3);",
+									"});",
+									"",
+									"// Guardar token automáticamente",
+									"if (pm.response.code === 200) {",
+									"    const responseJson = pm.response.json();",
+									"    pm.environment.set('auth_token', responseJson.token);",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/blacklists/token",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"blacklists",
+								"token"
+							]
+						},
+						"description": "Genera un token JWT válido para autenticar las siguientes peticiones a la API."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Gestión de Lista Negra - Casos Exitosos",
+			"item": [
+				{
+					"name": "Agregar Email Válido",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Email agregado exitosamente', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Response has success message', function () {",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(responseJson).to.have.property('msg');",
+									"    pm.expect(responseJson.msg).to.include('exitosamente');",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"usuario.bloqueado@ejemplo.com\",\n    \"appId\": \"550e8400-e29b-41d4-a716-446655440000\",\n    \"blockedReason\": \"Spam reportado múltiples veces\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/blacklists",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"blacklists"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Email sin Razón (Campo Opcional)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Email sin razón agregado exitosamente', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Campo blockedReason es opcional', function () {",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(responseJson.msg).to.include('exitosamente');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"sin.razon@ejemplo.com\",\n    \"appId\": \"99999999-8888-7777-6666-555555555555\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/blacklists",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"blacklists"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"auth": {
+				"type": "bearer",
+				"bearer": [
+					{
+						"key": "token",
+						"value": "{{auth_token}}",
+						"type": "string"
+					}
+				]
+			}
+		},
+		{
+			"name": "Validaciones de Error - JSON y Estructura",
+			"item": [
+				{
+					"name": "JSON Inválido",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('JSON inválido retorna error 400', function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test('Error message menciona JSON inválido', function () {",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(responseJson.msg).to.include('JSON válido');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"test@ejemplo.com\",\n    \"appId\": \"invalid-json\"\n    // JSON malformado sin coma"
+						},
+						"url": {
+							"raw": "{{base_url}}/blacklists",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"blacklists"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Body Vacío",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Body vacío retorna error 400', function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test('Error message menciona body vacío', function () {",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(responseJson.msg).to.include('vacío');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{base_url}}/blacklists",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"blacklists"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Campos Faltantes",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Campos faltantes retorna error 400', function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test('Error específico para campos faltantes', function () {",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(responseJson.msg).to.include('necesarios');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"usuario@ejemplo.com\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/blacklists",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"blacklists"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"auth": {
+				"type": "bearer",
+				"bearer": [
+					{
+						"key": "token",
+						"value": "{{auth_token}}",
+						"type": "string"
+					}
+				]
+			}
+		},
+		{
+			"name": "Validaciones de Error - Campos Vacíos",
+			"item": [
+				{
+					"name": "Email Vacío",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Email vacío retorna error 400', function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test('Error específico para email vacío', function () {",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(responseJson.msg).to.include('email no puede estar vacío');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"\",\n    \"appId\": \"550e8400-e29b-41d4-a716-446655440000\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/blacklists",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"blacklists"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "AppId Vacío",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('AppId vacío retorna error 400', function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test('Error específico para appId vacío', function () {",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(responseJson.msg).to.include('appId no puede estar vacío');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"test@ejemplo.com\",\n    \"appId\": \"\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/blacklists",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"blacklists"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Email Solo Espacios",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Email con solo espacios retorna error 400', function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test('Trim funciona correctamente', function () {",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(responseJson.msg).to.include('email no puede estar vacío');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"   \",\n    \"appId\": \"550e8400-e29b-41d4-a716-446655440000\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/blacklists",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"blacklists"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"auth": {
+				"type": "bearer",
+				"bearer": [
+					{
+						"key": "token",
+						"value": "{{auth_token}}",
+						"type": "string"
+					}
+				]
+			}
+		},
+		{
+			"name": "Validaciones de Error - Formato Inválido",
+			"item": [
+				{
+					"name": "Email Formato Inválido",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Email inválido retorna error 400', function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test('Error específico para formato de email', function () {",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(responseJson.msg).to.include('formato válido');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"email-invalido\",\n    \"appId\": \"550e8400-e29b-41d4-a716-446655440000\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/blacklists",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"blacklists"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "UUID Inválido",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('UUID inválido retorna error 400', function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test('Error específico para UUID inválido', function () {",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(responseJson.msg).to.include('UUID válido');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"test@ejemplo.com\",\n    \"appId\": \"not-a-uuid\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/blacklists",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"blacklists"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "blockedReason Muy Largo (>255 caracteres)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('blockedReason muy largo retorna error 400', function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test('Error específico para longitud de blockedReason', function () {",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(responseJson.msg).to.include('255 caracteres');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"test@ejemplo.com\",\n    \"appId\": \"550e8400-e29b-41d4-a716-446655440000\",\n    \"blockedReason\": \"Este es un texto muy largo que excede los 255 caracteres permitidos para el campo blockedReason. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium.\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/blacklists",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"blacklists"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"auth": {
+				"type": "bearer",
+				"bearer": [
+					{
+						"key": "token",
+						"value": "{{auth_token}}",
+						"type": "string"
+					}
+				]
+			}
+		},
+		{
+			"name": "Validaciones de Autenticación",
+			"item": [
+				{
+					"name": "Sin Token de Autorización",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Sin token retorna error 401', function () {",
+									"    pm.response.to.have.status(401);",
+									"});",
+									"",
+									"pm.test('Error de autorización', function () {",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(responseJson).to.have.property('msg');",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"test@ejemplo.com\",\n    \"appId\": \"550e8400-e29b-41d4-a716-446655440000\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/blacklists",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"blacklists"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Token Inválido",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Token inválido retorna error 422', function () {",
+									"    pm.response.to.have.status(422);",
+									"});",
+									"",
+									"pm.test('Error de token inválido', function () {",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(responseJson).to.have.property('msg');",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "not-vald-token",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer token-invalido"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"test@ejemplo.com\",\n    \"appId\": \"550e8400-e29b-41d4-a716-446655440000\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/blacklists",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"blacklists"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Casos Edge - Normalización",
+			"item": [
+				{
+					"name": "Email con Espacios y Mayúsculas",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Normalización funciona correctamente', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Email y datos normalizados correctamente', function () {",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(responseJson.msg).to.include('exitosamente');",
+									"});",
+									"",
+									"// Nota: La normalización convierte email a minúsculas y quita espacios"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"  TEST.USER@EJEMPLO.COM  \",\n    \"appId\": \"  550e8400-e29b-41d4-a716-446655440000  \",\n    \"blockedReason\": \"  Prueba de normalización  \"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/blacklists",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"blacklists"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Caracteres Especiales en Email",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Email con caracteres especiales válidos', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Caracteres especiales aceptados correctamente', function () {",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(responseJson.msg).to.include('exitosamente');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"user+tag@example-domain.co.uk\",\n    \"appId\": \"550e8400-e29b-41d4-a716-446655440000\",\n    \"blockedReason\": \"Email con caracteres especiales válidos\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/blacklists",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"blacklists"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"auth": {
+				"type": "bearer",
+				"bearer": [
+					{
+						"key": "token",
+						"value": "{{auth_token}}",
+						"type": "string"
+					}
+				]
+			}
+		},
+		{
+			"name": "Health Check",
+			"item": [
+				{
+					"name": "Verificar Estado del Servicio",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Health check retorna 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Response contiene status pong', function () {",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(responseJson).to.have.property('status', 'pong');",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/blacklists/health",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"blacklists",
+								"health"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{auth_token}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"// Script global - Pre-request",
+					"console.log('Ejecutando:', pm.info.requestName);",
+					"console.log('URL:', pm.request.url.toString());"
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"// Script global - Post-response",
+					"console.log('Status:', pm.response.code);",
+					"",
+					"// Validación global de headers",
+					"pm.test('Response has Content-Type header', function () {",
+					"    pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json');",
+					"});",
+					"",
+					"// Validación global de tiempo de respuesta",
+					"pm.test('Response time is acceptable', function () {",
+					"    pm.expect(pm.response.responseTime).to.be.below(5000);",
+					"});"
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:5000",
+			"type": "string"
+		},
+		{
+			"key": "auth_token",
+			"value": "",
+			"type": "string"
+		}
+	]
+}

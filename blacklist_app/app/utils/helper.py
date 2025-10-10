@@ -3,6 +3,15 @@ import uuid
 
 class Helper:
     @staticmethod
+    def validateRequest(request):
+        try:
+            data = request.get_json()
+            return data
+            
+        except Exception:
+            return None
+        
+    @staticmethod
     def validateUUID(app_id: str):
         try:
             #Intentamos convertir el appId a un objeto UUID
@@ -31,5 +40,16 @@ class Helper:
 
         else:
             data['ipAddress'] = request.remote_addr
+        
+        return data
+
+    @staticmethod
+    def normalizeEmail(data: dict):
+        #Normalizamos los datos
+        data['email'] = data.get('email').strip().lower()
+        data['appId'] = data.get('appId').strip()
+
+        if data.get('blockedReason'):
+            data['blockedReason'] = data.get('blockedReason').strip()
         
         return data

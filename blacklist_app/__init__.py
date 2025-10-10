@@ -3,14 +3,14 @@ from flask_cors import CORS
 from flask_restful import Api
 from flask_jwt_extended import JWTManager
 from blacklist_app.app.db.blacklist_db import db
-from blacklist_app.app.api.api import BlacklistRegister, BlacklistHealth, BlacklistToken
+from blacklist_app.app.api.api import BlacklistRegister, BlacklistHealth, BlacklistToken, BlacklistDelete
 
 def create_app():
     #Creamos la aplicacion de Flask
     app = Flask(__name__)
 
     #Ponemos configuraciones de la app
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql+psycopg2://proyectogrupo10:proyectogrupo10@terraform-20251009023827697300000001.cifuwoics1ov.us-east-1.rds.amazonaws.com:5432/proyect_db'
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql+psycopg2://proyectogrupo10:proyectogrupo10@terraform-20251010022152973300000001.cifuwoics1ov.us-east-1.rds.amazonaws.com:5432/proyect_db'
     app.config['JWT_SECRET_KEY'] = 'supersecretkey'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.config['PROPAGATE_EXCEPTIONS'] = True
@@ -35,5 +35,6 @@ def create_app():
     api.add_resource(BlacklistRegister, '/blacklists')
     api.add_resource(BlacklistHealth, '/blacklists/health')
     api.add_resource(BlacklistToken, '/blacklists/token')
+    api.add_resource(BlacklistDelete, '/blacklists/delete')
 
     return app

@@ -16,45 +16,42 @@ class BlacklistToken(Resource):
 class BlacklistRegister(Resource):
     @jwt_required()
     def post(self):
-        #Validamos que el request tenga JSON válido
-        try:
-            data = request.get_json()
-        except Exception:
-            return {'msg': 'El cuerpo de la solicitud debe ser JSON válido'}, 400
-
-        #Validamos que data no sea None
-        if data is None:
+        #Validamos que el request venga
+        if not request:
             return {'msg': 'El cuerpo de la solicitud no puede estar vacío'}, 400
+        
+        #Validamos que el request tenga JSON valido
+        data = Helper.validateRequest(request)
+
+        if not data:
+            return {'msg': 'El cuerpo de la solicitud debe ser JSON válido'}, 400
 
         #Validamos que todos los campos necesarios esten presentes
         if not all(key in data for key in ('email', 'appId')):
             return {"msg": 'Hay campos necesarios que no están presentes en la solicitud'}, 400
 
+        #Normalizamos los datos
+        data = Helper.normalizeEmail(data)
+
         #Validamos que los campos no estén vacíos
-        if not data.get('email') or not data.get('email').strip():
+        if not data.get('email'):
             return {'msg': 'El campo email no puede estar vacío'}, 400
 
-        if not data.get('appId') or not data.get('appId').strip():
+        if not data.get('appId'):
             return {'msg': 'El campo appId no puede estar vacío'}, 400
 
         #Validamos que el email tenga un formato correcto
-        if not Helper.validateEmail(data.get('email').strip()):
+        if not Helper.validateEmail(data.get('email')):
             return {'msg': 'El email proporcionado no tiene un formato válido'}, 400
 
         #Validamos que el appId sea un UUID valido
-        if not Helper.validateUUID(data.get('appId').strip()):
+        if not Helper.validateUUID(data.get('appId')):
             return {'msg': 'El appId proporcionado no es un UUID válido'}, 400
 
-        #Validamos la longitud del campo reason si está presente
-        if 'reason' in data and data.get('reason'):
-            if len(data.get('reason').strip()) > 255:
-                return {'msg': 'El campo reason no puede exceder 255 caracteres'}, 400
-
-        #Normalizamos los datos
-        data['email'] = data.get('email').strip().lower()
-        data['appId'] = data.get('appId').strip()
-        if 'reason' in data and data.get('reason'):
-            data['reason'] = data.get('reason').strip()
+        #Validamos la longitud del campo blockedReason si esta presente
+        if data.get('blockedReason'):
+            if len(data.get('blockedReason')) > 255:
+                return {'msg': 'El campo blockedReason no puede exceder 255 caracteres'}, 400
 
         #Obtenemos ip del request
         data = Helper.getIpAddress(data, request)
@@ -75,3 +72,14 @@ class BlacklistRegister(Resource):
 class BlacklistHealth(Resource):
     def get(self):
         return {'status': 'pong'}, 200
+
+class BlacklistDelete(Resource):
+    def post(self):
+        #Borramos todos los registros de la lista negra
+        salida = blacklist_crud.deleteAllBlacklist()
+
+        #Validamos si hubo un error al eliminar los registros
+        if isinstance(salida, str):
+            return {'msg': f'Error al eliminar los registros de la lista negra: {salida}'}, 500
+        
+        return {'msg': 'Todos los registros de la lista negra han sido eliminados'}, 200
