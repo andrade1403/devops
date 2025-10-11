@@ -1,16 +1,7 @@
 import re
 import uuid
 
-class Helper:
-    @staticmethod
-    def validateRequest(request):
-        try:
-            data = request.get_json()
-            return data
-            
-        except Exception:
-            return None
-        
+class Helper:      
     @staticmethod
     def validateUUID(app_id: str):
         try:

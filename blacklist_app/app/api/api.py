@@ -16,16 +16,9 @@ class BlacklistToken(Resource):
 class BlacklistRegister(Resource):
     @jwt_required()
     def post(self):
-        #Validamos que el request venga
-        if not request:
-            return {'msg': 'El cuerpo de la solicitud no puede estar vacío'}, 400
+        #Obtenemos los datos del request
+        data = request.get_json()
         
-        #Validamos que el request tenga JSON valido
-        data = Helper.validateRequest(request)
-
-        if not data:
-            return {'msg': 'El cuerpo de la solicitud debe ser JSON válido'}, 400
-
         #Validamos que todos los campos necesarios esten presentes
         if not all(key in data for key in ('email', 'appId')):
             return {"msg": 'Hay campos necesarios que no están presentes en la solicitud'}, 400

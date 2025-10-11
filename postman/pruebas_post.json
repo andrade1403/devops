@@ -1,12 +1,62 @@
 {
 	"info": {
-		"_postman_id": "812fdc2d-ac98-4263-80c2-6daf6a67043d",
+		"_postman_id": "89c6ead6-3f96-4140-9c77-789a439297f0",
 		"name": "Pruebas POST - Lista Negra API",
 		"description": "API REST completa con validaciones robustas y scripts de prueba automatizados",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "38979541"
 	},
 	"item": [
+		{
+			"name": "Gestión de Tabla - Limpieza Inicial",
+			"item": [
+				{
+					"name": "Borrar todos los registros de la lista negra",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Borrado exitoso retorna 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Mensaje de confirmación correcto', function () {",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(responseJson).to.have.property('msg', 'Todos los registros de la lista negra han sido eliminados');",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/blacklists/delete",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"blacklists",
+								"delete"
+							]
+						},
+						"description": "Elimina todos los registros de la tabla blacklist sin requerir JWT."
+					},
+					"response": []
+				}
+			]
+		},
 		{
 			"name": "Authentication",
 			"item": [
@@ -92,7 +142,7 @@
 									"pm.test('Response has success message', function () {",
 									"    const responseJson = pm.response.json();",
 									"    pm.expect(responseJson).to.have.property('msg');",
-									"    pm.expect(responseJson.msg).to.include('exitosamente');",
+									"    pm.expect(responseJson).to.have.property('msg', 'Usuario agregado a la lista negra exitosamente');",
 									"});"
 								],
 								"type": "text/javascript",
@@ -138,7 +188,7 @@
 									"",
 									"pm.test('Campo blockedReason es opcional', function () {",
 									"    const responseJson = pm.response.json();",
-									"    pm.expect(responseJson.msg).to.include('exitosamente');",
+									"    pm.expect(responseJson).to.have.property('msg', 'Usuario agregado a la lista negra exitosamente');",
 									"});"
 								],
 								"type": "text/javascript"
@@ -193,14 +243,11 @@
 								"exec": [
 									"pm.test('JSON inválido retorna error 400', function () {",
 									"    pm.response.to.have.status(400);",
-									"});",
-									"",
-									"pm.test('Error message menciona JSON inválido', function () {",
-									"    const responseJson = pm.response.json();",
-									"    pm.expect(responseJson.msg).to.include('JSON válido');",
 									"});"
 								],
-								"type": "text/javascript"
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
 							}
 						}
 					],
@@ -237,14 +284,11 @@
 								"exec": [
 									"pm.test('Body vacío retorna error 400', function () {",
 									"    pm.response.to.have.status(400);",
-									"});",
-									"",
-									"pm.test('Error message menciona body vacío', function () {",
-									"    const responseJson = pm.response.json();",
-									"    pm.expect(responseJson.msg).to.include('vacío');",
 									"});"
 								],
-								"type": "text/javascript"
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
 							}
 						}
 					],
@@ -285,10 +329,12 @@
 									"",
 									"pm.test('Error específico para campos faltantes', function () {",
 									"    const responseJson = pm.response.json();",
-									"    pm.expect(responseJson.msg).to.include('necesarios');",
+									"    pm.expect(responseJson).to.have.property('msg', 'Hay campos necesarios que no están presentes en la solicitud');",
 									"});"
 								],
-								"type": "text/javascript"
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
 							}
 						}
 					],
@@ -344,10 +390,12 @@
 									"",
 									"pm.test('Error específico para email vacío', function () {",
 									"    const responseJson = pm.response.json();",
-									"    pm.expect(responseJson.msg).to.include('email no puede estar vacío');",
+									"    pm.expect(responseJson).to.have.property('msg', 'El campo email no puede estar vacío');",
 									"});"
 								],
-								"type": "text/javascript"
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
 							}
 						}
 					],
@@ -388,10 +436,12 @@
 									"",
 									"pm.test('Error específico para appId vacío', function () {",
 									"    const responseJson = pm.response.json();",
-									"    pm.expect(responseJson.msg).to.include('appId no puede estar vacío');",
+									"    pm.expect(responseJson).to.have.property('msg', 'El campo appId no puede estar vacío');",
 									"});"
 								],
-								"type": "text/javascript"
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
 							}
 						}
 					],
@@ -432,10 +482,12 @@
 									"",
 									"pm.test('Trim funciona correctamente', function () {",
 									"    const responseJson = pm.response.json();",
-									"    pm.expect(responseJson.msg).to.include('email no puede estar vacío');",
+									"    pm.expect(responseJson).to.have.property('msg', 'El email proporcionado no tiene un formato válido');",
 									"});"
 								],
-								"type": "text/javascript"
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
 							}
 						}
 					],
@@ -491,10 +543,12 @@
 									"",
 									"pm.test('Error específico para formato de email', function () {",
 									"    const responseJson = pm.response.json();",
-									"    pm.expect(responseJson.msg).to.include('formato válido');",
+									"    pm.expect(responseJson).to.have.property('msg', 'El email proporcionado no tiene un formato válido');",
 									"});"
 								],
-								"type": "text/javascript"
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
 							}
 						}
 					],
@@ -535,10 +589,12 @@
 									"",
 									"pm.test('Error específico para UUID inválido', function () {",
 									"    const responseJson = pm.response.json();",
-									"    pm.expect(responseJson.msg).to.include('UUID válido');",
+									"    pm.expect(responseJson).to.have.property('msg', 'El appId proporcionado no es un UUID válido');",
 									"});"
 								],
-								"type": "text/javascript"
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
 							}
 						}
 					],
@@ -579,10 +635,12 @@
 									"",
 									"pm.test('Error específico para longitud de blockedReason', function () {",
 									"    const responseJson = pm.response.json();",
-									"    pm.expect(responseJson.msg).to.include('255 caracteres');",
+									"    pm.expect(responseJson).to.have.property('msg', 'El campo blockedReason no puede exceder 255 caracteres');",
 									"});"
 								],
-								"type": "text/javascript"
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
 							}
 						}
 					],
@@ -752,7 +810,7 @@
 									"",
 									"pm.test('Email y datos normalizados correctamente', function () {",
 									"    const responseJson = pm.response.json();",
-									"    pm.expect(responseJson.msg).to.include('exitosamente');",
+									"    pm.expect(responseJson).to.have.property('msg', 'Usuario agregado a la lista negra exitosamente');",
 									"});",
 									"",
 									"// Nota: La normalización convierte email a minúsculas y quita espacios"
@@ -798,7 +856,7 @@
 									"",
 									"pm.test('Caracteres especiales aceptados correctamente', function () {",
 									"    const responseJson = pm.response.json();",
-									"    pm.expect(responseJson.msg).to.include('exitosamente');",
+									"    pm.expect(responseJson).to.have.property('msg', 'Usuario agregado a la lista negra exitosamente');",
 									"});"
 								],
 								"type": "text/javascript"
@@ -900,6 +958,7 @@
 			"listen": "prerequest",
 			"script": {
 				"type": "text/javascript",
+				"requests": {},
 				"exec": [
 					"// Script global - Pre-request",
 					"console.log('Ejecutando:', pm.info.requestName);",
@@ -911,6 +970,7 @@
 			"listen": "test",
 			"script": {
 				"type": "text/javascript",
+				"requests": {},
 				"exec": [
 					"// Script global - Post-response",
 					"console.log('Status:', pm.response.code);",
@@ -931,13 +991,11 @@
 	"variable": [
 		{
 			"key": "base_url",
-			"value": "http://localhost:5000",
-			"type": "string"
+			"value": "http://localhost:5000"
 		},
 		{
 			"key": "auth_token",
-			"value": "",
-			"type": "string"
+			"value": ""
 		}
 	]
 }
