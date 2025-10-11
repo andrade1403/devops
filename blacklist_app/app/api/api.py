@@ -30,15 +30,15 @@ class BlacklistRegister(Resource):
         if not all(key in data for key in ('email', 'appId')):
             return {"msg": 'Hay campos necesarios que no están presentes en la solicitud'}, 400
 
-        #Normalizamos los datos
-        data = Helper.normalizeRequest(data)
-
         #Validamos que los campos no estén vacíos
         if not data.get('email'):
             return {'msg': 'El campo email no puede estar vacío'}, 400
 
         if not data.get('appId'):
             return {'msg': 'El campo appId no puede estar vacío'}, 400
+        
+        #Normalizamos los datos
+        data = Helper.normalizeRequest(data)
 
         #Validamos que el email tenga un formato correcto
         if not Helper.validateEmail(data.get('email')):
