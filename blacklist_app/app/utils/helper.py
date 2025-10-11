@@ -44,7 +44,7 @@ class Helper:
         return data
 
     @staticmethod
-    def normalizeEmail(data: dict):
+    def normalizeRequest(data: dict):
         #Normalizamos los datos
         data['email'] = data.get('email').strip().lower()
         data['appId'] = data.get('appId').strip()
