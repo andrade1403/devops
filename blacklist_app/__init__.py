@@ -3,7 +3,7 @@ from flask_cors import CORS
 from flask_restful import Api
 from flask_jwt_extended import JWTManager
 from blacklist_app.app.db.blacklist_db import db
-from blacklist_app.app.api.api import BlacklistRegister, BlacklistHealth, BlacklistToken
+from blacklist_app.app.api.api import BlacklistRegister, BlacklistHealth, BlacklistToken, BlacklistGetEmail
 
 def create_app():
     #Creamos la aplicacion de Flask
@@ -35,5 +35,6 @@ def create_app():
     api.add_resource(BlacklistRegister, '/blacklists')
     api.add_resource(BlacklistHealth, '/blacklists/health')
     api.add_resource(BlacklistToken, '/blacklists/token')
+    api.add_resource(BlacklistGetEmail, '/blacklists/<string:email>')
 
     return app

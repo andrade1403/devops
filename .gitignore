@@ -222,3 +222,7 @@ override.tf.json
 *_override.tf.json
 .terraform/modules
 .terraform/plugins
+
+#Despliegue local
+Dockerfile
+docker-compose.yml

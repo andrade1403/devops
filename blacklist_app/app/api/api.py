@@ -46,6 +46,23 @@ class BlacklistRegister(Resource):
             return {'msg': f'Error al agregar el email a la lista negra: {salida}'}, 500
 
         return {'msg': 'Usuario agregado a la lista negra exitosamente'}, 200
+
+class BlacklistGetEmail(Resource):
+    @jwt_required()
+    def get(self, email):
+        #validamos que el email no este vacio
+        if not email:
+            return {'msg': 'Se requiere un parámetro de búsqueda'}, 400
+
+        #Validamos que el email tenga un formato correcto
+        if not Helper.validateEmail(email):
+            return {'msg': 'El email proporcionado no tiene un formato válido'}, 400
+
+        #Buscamos el email en la base de datos
+        salida = blacklist_crud.getEmailFromBlacklist(email)
+
+        return salida, 200
+
         
 class BlacklistHealth(Resource):
     def get(self):
