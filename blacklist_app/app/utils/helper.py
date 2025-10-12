@@ -1,7 +1,7 @@
 import re
 import uuid
 
-class Helper:
+class Helper:      
     @staticmethod
     def validateUUID(app_id: str):
         try:
@@ -31,5 +31,16 @@ class Helper:
 
         else:
             data['ipAddress'] = request.remote_addr
+        
+        return data
+
+    @staticmethod
+    def normalizeRequest(data: dict):
+        #Normalizamos los datos
+        data['email'] = data.get('email').strip().lower()
+        data['appId'] = data.get('appId').strip()
+
+        if data.get('blockedReason'):
+            data['blockedReason'] = data.get('blockedReason').strip()
         
         return data

@@ -35,4 +35,17 @@ class BlacklistCRUD:
                 }
         
         except Exception as e:
+            self.session.rollback()
+            return str(e)
+
+    def deleteAllBlacklist(self):
+        try:
+            #Borramos todos los registros
+            self.session.query(Blacklist).delete()
+
+            #Hacemos persistencia
+            self.session.commit()
+        
+        except Exception as e:
+            self.session.rollback()
             return str(e)
