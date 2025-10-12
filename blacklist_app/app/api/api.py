@@ -46,6 +46,12 @@ class BlacklistRegister(Resource):
             if len(data.get('blockedReason')) > 255:
                 return {'msg': 'El campo blockedReason no puede exceder 255 caracteres'}, 400
 
+        #Validamos que el email no este ya en la lista negra
+        email_existente = blacklist_crud.getEmailFromBlacklist(data.get('email'))
+
+        if email_existente.get('found'):
+            return {'msg': 'El email ya se encuentra en la lista negra'}, 412
+
         #Obtenemos ip del request
         data = Helper.getIpAddress(data, request)
 
