@@ -32,10 +32,10 @@ def create_app():
 
     #Registramos la API RESTful
     api = Api(app)
-    api.add_resource(BlacklistRegister, '/blacklists')
-    api.add_resource(BlacklistHealth, '/blacklists/health')
-    api.add_resource(BlacklistToken, '/blacklists/token')
-    api.add_resource(BlacklistGetEmail, '/blacklists/<string:email>')
-    api.add_resource(BlacklistDelete, '/blacklists/delete')
+    api.add_resource(BlacklistRegister, '/v1/blacklists')
+    api.add_resource(BlacklistHealth, '/v1/blacklists/health')
+    api.add_resource(BlacklistToken, '/v1/blacklists/token')
+    api.add_resource(BlacklistGetEmail, '/v1/blacklists/<string:email>')
+    api.add_resource(BlacklistDelete, '/v1/blacklists/delete')
 
     return app
