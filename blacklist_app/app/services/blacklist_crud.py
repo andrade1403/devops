@@ -26,7 +26,7 @@ class BlacklistCRUD:
                 return {
                     'email': blacklist_entry.email,
                     'found': True,
-                    'blockedReason': blacklist_entry.blockedReason,
+                    'blockedReason': blacklist_entry.blockedReason if blacklist_entry.blockedReason else '',
                 }
             else:
                 return {
