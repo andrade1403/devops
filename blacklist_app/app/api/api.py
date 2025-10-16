@@ -21,7 +21,7 @@ class BlacklistRegister(Resource):
         
         #Validamos que todos los campos necesarios esten presentes
         if not all(key in data for key in ('email', 'appId')):
-            return {"msg": 'Hay campos necesarios que no están presentes en la solicitud'}, 400
+            return {'msg': 'Hay campos necesarios que no están presentes en la solicitud'}, 400
 
         #Validamos que los campos no estén vacíos
         if not data.get('email'):
