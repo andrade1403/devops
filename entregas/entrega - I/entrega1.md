@@ -3,7 +3,7 @@
 ## Punto 1a
 Para la configuración de Amazon RDS dentro del servicio AWS Elastic Beanstalk, durante el proceso de creación del entorno se habilitó la opción correspondiente a RDS, tal como se muestra en la siguiente imagen:
 
-![rds](rds.png)
+![rds](./punto_I/rds.png)
 
 En dicha configuración, se especificó una base de datos con motor PostgreSQL (17.4) y cuando el servicio de AWS Elastic Beanstalk eliminé la aplicación, la base de datos también será eliminada ya que estamos en un entorno de desarrollo y no requerimos guardar instancias de AWS RDS.
 
@@ -26,19 +26,19 @@ application.config['SQLALCHEMY_DATABASE_URI'] = (
 
 Para la configuración de la aplicación en AWS Elastic Beanstalk, el primer paso consistió en crear y configurar el entorno de ejecución. Este se inicializó como un entorno de tipo “Aplicación de ejemplo”, lo que permite posteriormente cargar el paquete de la aplicación en formato .zip una vez completada la configuración inicial.
 
-![pasoI](./paso%20I%20-%20app.png)
+![pasoI](./punto_I/paso%20I%20-%20app.png)
 
 Adicionalmente, es importante señalar que la aplicación se ejecuta sobre Python 3.11, tal como se muestra en la configuración del entorno que se ilustra a continuación:
 
-![pasoI-python](paso%20I%20-%20Python.png)
+![pasoI-python](./punto_I/paso%20I%20-%20Python.png)
 
 Posteriormente, se configuraron los roles de servicio y los perfiles de instancia de EC2, los cuales permiten a AWS Elastic Beanstalk crear, gestionar y administrar los recursos necesarios para el correcto funcionamiento del entorno de despliegue:
 
-![pasoII](pasoII.png)
+![pasoII](./punto_I/pasoII.png)
 
 A continuación, se procede a configurar la base de datos con motor PostgreSQL, definiendo las siguientes características principales:
 
-![pasoIII](pasoIII.png)
+![pasoIII](./punto_I/pasoIII.png)
 
 Posteriormente, se configuraron los parámetros de escalado y distribución de tráfico de instancias. En este caso, se habilitó el entorno Equilibrio de carga, el cual utiliza el servicio Auto Scaling de Amazon EC2 para gestionar dinámicamente el tráfico de solicitudes.
 
@@ -46,7 +46,7 @@ El entorno se configuró con un mínimo de 3 instancias EC2 y un máximo de 6, p
 
 A continuación, se presentan las configuraciones donde se especifican los rangos de instancias EC2 administrados por el balanceador de carga:
 
-![pasoIV](pasoIV.png)
+![pasoIV](./punto_I/pasoIV.png)
 
 ## Punto 1c
 
@@ -69,7 +69,7 @@ Dentro de la aplicación desarrollada con Flask, se implementa un endpoint `/v1/
 
 A través del archivo `.ebextensions`, se establece la ruta de este endpoint, así como los parámetros asociados a los ciclos de verificación, que incluyen la frecuencia de los chequeos y la tolerancia a errores definida por Elastic Beanstalk para determinar el estado de salud del entorno. A continuación, se presenta el health checker en AWS:
 
-![health-checker](health_checker.png)
+![health-checker](./punto_I/health_checker.png)
 
 ## Rolling with additional batch
 
