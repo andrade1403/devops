@@ -71,4 +71,41 @@ A través del archivo `.ebextensions`, se establece la ruta de este endpoint, as
 
 ![health-checker](health_checker.png)
 
-## Punto 2a
+## Rolling with additional batch
+
+### Punto 2a
+
+En cuanto a la cantidad de instancias utilizadas, se configuró un mínimo de tres instancias EC2, las cuales son gestionadas por el Elastic Load Balancer (ELB) para garantizar la disponibilidad del servicio.
+
+Durante la actualización de la aplicación, al implementar una nueva versión del código, se configuró la política de despliegue Rolling with Additional Batch, definida en el archivo de configuración de Elastic Beanstalk de la siguiente manera:
+
+```
+aws:elasticbeanstalk:command:
+    DeploymentPolicy: RollingWithAdditionalBatch
+    BatchSizeType: Fixed
+    BatchSize: 3
+```
+
+Esta configuración establece que el despliegue se realizará por lotes de tres instancias. Al iniciar la actualización, Elastic Beanstalk crea tres nuevas instancias EC2 que ejecutan la versión más reciente de la aplicación. Estas nuevas instancias deben alcanzar el estado “healthy” antes de que las instancias anteriores sean finalizadas.
+
+En consecuencia, durante el proceso de despliegue coexistieron tres instancias del versionamiento anterior y tres instancias nuevas, completando así el proceso de rolling deployment con additional batch sin interrupción del servicio.
+
+A continuación, se presenta la secuencia del proceso de despliegue al momento de crear el primer lote (batch) de nuevas instancias EC2. Se muestra el mensaje de estado emitido durante la creación de las nuevas instancias, el estado posterior cuando estas alcanzaron el estado “healthy”, así como la notificación de remoción de las instancias anteriores. Finalmente, se detalla el estado operativo de las nuevas y viejas instancias EC2 una vez completado el proceso de despliegue:
+
+#### **Batch nuevo de EC2**
+![batch1](./rolling_add_batch/batch1.png)
+
+#### **Instancias EC2 a eliminar**
+![remove](./rolling_add_batch/remove_ec2.png)
+
+#### **Estado de instancias viejas y nuevas**
+![state](./rolling_add_batch/state.png)
+
+### Punto 2b
+
+Para validar que el despliegue se encontraba en ejecución correctamente, se verificó el estado del aplicativo desde la consola de AWS Elastic Beanstalk, donde se mostró el siguiente mensaje:
+
+![degraded_ok](./rolling_add_batch/degradado_ok.png)
+
+Este mensaje indica que el entorno pasó de un estado “Degradado” a “OK”, confirmando que el despliegue se completó satisfactoriamente y que el ambiente estaba operativo y listo para recibir peticiones.
+
