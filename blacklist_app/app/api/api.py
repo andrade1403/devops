@@ -84,7 +84,7 @@ class BlacklistGetEmail(Resource):
 
         #Validamos si hubo un error al buscar en base de datos
         if not salida.get('found'):
-            return {'msg': f'El email {email} no se encuentra en la lista negra'}, 404
+            return {'msg': f"El email {email} no se encuentra en la lista negra"}, 404
 
         return salida, 200
 
