@@ -5,7 +5,7 @@ Para la configuración de Amazon RDS dentro del servicio AWS Elastic Beanstalk, 
 
 ![rds](rds.png)
 
-En dicha configuración, se especificó una base de datos con motor PostgreSQL y cuando el servicio de AWS Elastic Beanstalk eliminé la aplicación, la base de datos también será eliminada ya que estamos en un entorno de desarrollo y no requerimos guardar instancias de AWS RDS.
+En dicha configuración, se especificó una base de datos con motor PostgreSQL (17.4) y cuando el servicio de AWS Elastic Beanstalk eliminé la aplicación, la base de datos también será eliminada ya que estamos en un entorno de desarrollo y no requerimos guardar instancias de AWS RDS.
 
 Para permitir que la aplicación utilice esta base de datos, dentro del archivo principal de la aplicación `application.py` se definió la conexión mediante variables de entorno, las cuales son generadas automáticamente por Beanstalk al momento de crear el entorno con la instancia de RDS asociada.
 
@@ -21,6 +21,32 @@ application.config['SQLALCHEMY_DATABASE_URI'] = (
     f"@{os.getenv('RDS_HOSTNAME')}:{os.getenv('RDS_PORT')}/{os.getenv('RDS_DB_NAME')}"
 )
 ```
+
+## Punto 1b
+
+Para la configuración de la aplicación en AWS Elastic Beanstalk, el primer paso consistió en crear y configurar el entorno de ejecución. Este se inicializó como un entorno de tipo “Aplicación de ejemplo”, lo que permite posteriormente cargar el paquete de la aplicación en formato .zip una vez completada la configuración inicial.
+
+![pasoI](./paso%20I%20-%20app.png)
+
+Adicionalmente, es importante señalar que la aplicación se ejecuta sobre Python 3.11, tal como se muestra en la configuración del entorno que se ilustra a continuación:
+
+![pasoI-python](paso%20I%20-%20Python.png)
+
+Posteriormente, se configuraron los roles de servicio y los perfiles de instancia de EC2, los cuales permiten a AWS Elastic Beanstalk crear, gestionar y administrar los recursos necesarios para el correcto funcionamiento del entorno de despliegue:
+
+![pasoII](pasoII.png)
+
+A continuación, se procede a configurar la base de datos con motor PostgreSQL, definiendo las siguientes características principales:
+
+![pasoIII](pasoIII.png)
+
+Posteriormente, se configuraron los parámetros de escalado y distribución de tráfico de instancias. En este caso, se habilitó el entorno Equilibrio de carga, el cual utiliza el servicio Auto Scaling de Amazon EC2 para gestionar dinámicamente el tráfico de solicitudes.
+
+El entorno se configuró con un mínimo de 3 instancias EC2 y un máximo de 6, permitiendo así una escala automática basada en la demanda. Esta configuración también se considera dentro de las estrategias de despliegue, con el fin de optimizar la gestión de los batches durante las actualizaciones del entorno.
+
+A continuación, se presentan las configuraciones donde se especifican los rangos de instancias EC2 administrados por el balanceador de carga:
+
+![pasoIV](pasoIV.png)
 
 ## Punto 1c
 
