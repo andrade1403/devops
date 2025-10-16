@@ -109,3 +109,26 @@ Para validar que el despliegue se encontraba en ejecución correctamente, se ver
 
 Este mensaje indica que el entorno pasó de un estado “Degradado” a “OK”, confirmando que el despliegue se completó satisfactoriamente y que el ambiente estaba operativo y listo para recibir peticiones.
 
+### Punto 2c
+
+El tiempo total del despliegue se puede observar en la siguiente imagen:
+
+![time](./rolling_add_batch/time.png)
+
+Tal como se evidencia, desde el momento en que se cargó e implementó la nueva versión del código (a las 16:52:07) hasta la finalización del proceso (a las 16:57:32), el despliegue tuvo una duración aproximada de 5 minutos y 25 segundos.
+
+### Punto 2d
+
+En este despliegue se utilizaron nuevas instancias EC2, dado que se empleó una estrategia de implementación de tipo Rolling with Additional Batch.
+
+Una vez las nuevas instancias se encuentran completamente operativas, las instancias antiguas son finalizadas de manera controlada, repitiendo el proceso hasta completar todos los lotes definidos. Por tanto, el despliegue se ejecutó sobre nuevas instancias.
+
+### Punto 2e
+
+En cada punto previo se adjuntaron los pantallazos de AWS con los resultados del despliegue.
+
+### Punto 2f
+
+Este tipo de despliegue crea lotes (batches) del tamaño previamente definido, generando nuevas instancias para cada lote. Elastic Beanstalk mantiene las instancias anteriores en ejecución hasta que las nuevas alcanzan el estado “healthy”, garantizando de esta manera la disponibilidad continua del servicio.
+
+En conclusión, esta estrategia ofrece la gran ventaja de evitar tiempos de indisponibilidad durante el proceso de actualización. Además, proporciona flexibilidad en la configuración de los lotes, permitiendo definir su tamaño tanto de forma fija como mediante un porcentaje específico del total de instancias del entorno.
