@@ -178,7 +178,7 @@ El proceso anterior también ayuda a validar que el balanceador de carga quedó 
 
 Lo siguiente que se hace, es ejecutar las pruebas automatizadas utilizando Postman, esto ya hace una comprobación más completa de que el proyecto se desplegó correctamente y está bien configurado. De igual forma, si algo falla en esta ejecución, se puede deber a un tema de configuración o un error introducido en el código. 
 
-## Despliegue 
+### Despliegue 
 
 ![inicio](./rolling/inicio-eventos-actualizacion.png)
 
@@ -192,11 +192,11 @@ Finalmente, podemos ver que la aplicación se desplegó correctamente con la nue
 
 ![resultado](./rolling/resultado-actualizacion.png)
 
-## Formato de despliegue: 
+### Formato de despliegue: 
 
 A partir de una revisión previa al despliegue y una posterior al mismo, se encontró que el despliegue se realiza sobre las mismas instancias originales. Lo que se puede observar es que el despliegue toma el número inicial del lote de instancias a actualizar, que en nuestro caso es 1, y va por cada lote, bajando la versión actual, instalando la nueva y dando un tiempo para garantizar que el despliegue se realiza correctamente antes de continuar con el siguiente. 
 
-## Hallazgos 
+### Hallazgos 
 
 Esta estrategia de despliegue garantiza que no haya una indisponibilidad del servicio en ningún momento, ya que, si se configura correctamente la cantidad de instancias a actualizar a la vez, siempre habrá instancias disponibles. 
 
