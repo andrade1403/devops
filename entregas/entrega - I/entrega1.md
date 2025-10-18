@@ -132,3 +132,72 @@ En cada punto previo se adjuntaron los pantallazos de AWS con los resultados del
 Este tipo de despliegue crea lotes (batches) del tamaño previamente definido, generando nuevas instancias para cada lote. Elastic Beanstalk mantiene las instancias anteriores en ejecución hasta que las nuevas alcanzan el estado “healthy”, garantizando de esta manera la disponibilidad continua del servicio.
 
 En conclusión, esta estrategia ofrece la gran ventaja de evitar tiempos de indisponibilidad durante el proceso de actualización. Además, proporciona flexibilidad en la configuración de los lotes, permitiendo definir su tamaño tanto de forma fija como mediante un porcentaje específico del total de instancias del entorno.
+
+
+## Estraegia de despliegue Rolling
+
+A continuación, se va a explicar la estrategia de despliegue Rolling (Continua, como aparece en AWS en español), aplicada al proyecto desplegado en el recurso AWS Elastic Beanstlack. 
+
+Para realizar la configuración de la estrategia de despliegue en el proyecto, como se menciona anteriormente, se configura el archivo app.config con la siguiente información: 
+
+```
+aws:elasticbeanstalk:command: 
+    DeploymentPolicy: Rolling 
+    BatchSizeType: Fixed 
+    BatchSize: 1 
+```
+
+Inicialmente se muestra la estrategia que va a ser utilizada que en este caso es Rolling. Se define también la forma en la que se van a seleccionar los lotes que serán actualizados, para este caso, vamos a tomar un número fijo, pero también es posible configurar un porcentaje de instancias. Por último, lo que se define es el número de instancias que van a ser actualizadas en cada momento, para este ejemplo, se va a actualizar una instancia a la vez, esto porque, al tener 3 instancias, se garantiza que en cada momento exista más de una instancia en ejecución recibiendo peticiones. 
+
+### Cantidad de instancias utilizadas:
+
+Para poder evidenciar correctamente el funcionamiento de la estrategia de despliegue, se decide hacer uso de la siguiente configuración: 
+- Instancias mínimas: 3 
+- Instancias máximas: 6
+
+### Despliegue ejecutándose correctamente 
+
+Para poder validar que el despliegue se ejecuta correctamente se tomaron en cuante tres revisiones iniciales, que ayudan a detrminar, de forma progresiva, que el despliegue se realiza correctamente. 
+
+La primera es ver el estado de las instancias desplegadas en la consola de AWS. 
+
+![instancias ok](./rolling/rolling-instancias-ok.png)
+
+Acá podemos ver el estado de cada una de las instancias y si esta pudo ser desplegada correctamente. De igual forma, podemos ver los logs de la aplicación para corroborar que se desplegó correctamente. 
+
+ 
+
+Lo segundo es validar por el dominio asignado al entorno de Elastic Beanstalk, que se puede acceder a las instancias, eso se puede hacer fácilmente por el endpoint dispuesto para validar el estado del despliegue:
+```
+{{base_url}} /v1/blacklists/health
+```
+
+![health](./rolling/validate-healthcheck.png)
+
+El proceso anterior también ayuda a validar que el balanceador de carga quedó configurado correctamente y esta direccionando bien a las instancias desplegadas. 
+
+Lo siguiente que se hace, es ejecutar las pruebas automatizadas utilizando Postman, esto ya hace una comprobación más completa de que el proyecto se desplegó correctamente y está bien configurado. De igual forma, si algo falla en esta ejecución, se puede deber a un tema de configuración o un error introducido en el código. 
+
+## Despliegue 
+
+![inicio](./rolling/inicio-eventos-actualizacion.png)
+
+Tiempo total de despliegue: 
+
+Como se puede observar en la siguiente imagen, el despliegue de la nueva versión de la aplicación inicia a las: 11:47:45 (UTC-5) y finaliza a las 11:55:43 (UTC-5), lo que al final se traduce en un tiempo total de despliegue de aproximadamente: 8 minutos. 
+
+![fin](./rolling/finalizacion-actualizacion-eventos.png)
+
+Finalmente, podemos ver que la aplicación se desplegó correctamente con la nueva versión:
+
+![resultado](./rolling/resultado-actualizacion.png)
+
+## Formato de despliegue: 
+
+A partir de una revisión previa al despliegue y una posterior al mismo, se encontró que el despliegue se realiza sobre las mismas instancias originales. Lo que se puede observar es que el despliegue toma el número inicial del lote de instancias a actualizar, que en nuestro caso es 1, y va por cada lote, bajando la versión actual, instalando la nueva y dando un tiempo para garantizar que el despliegue se realiza correctamente antes de continuar con el siguiente. 
+
+## Hallazgos 
+
+Esta estrategia de despliegue garantiza que no haya una indisponibilidad del servicio en ningún momento, ya que, si se configura correctamente la cantidad de instancias a actualizar a la vez, siempre habrá instancias disponibles. 
+
+Sin embargo, algo que se nota del despliegue, es que hay momentos en los que conviven ambas versiones de la aplicación. Lo cual puede ser una ventaja, ya que, si en algún punto se introduce un error en la nueva versión, si se detecta antes de terminar el despliegue, se puede deshacer el despliegue para que quede la versión previa.
