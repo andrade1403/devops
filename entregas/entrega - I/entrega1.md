@@ -180,6 +180,10 @@ Lo siguiente que se hace, es ejecutar las pruebas automatizadas utilizando Postm
 
 ### Despliegue 
 
+Una vez se empieza con el proceso de despliegue, la estrategia va iterando por cada una de las instancias para ir actualizando la versión desplegada:
+![iteracion](./rolling/actializando-media.png)
+
+A continuación, se puede observar los estados al inicio del despliegue:
 ![inicio](./rolling/inicio-eventos-actualizacion.png)
 
 Tiempo total de despliegue: 
