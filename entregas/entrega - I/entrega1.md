@@ -71,7 +71,7 @@ A través del archivo `.ebextensions`, se establece la ruta de este endpoint, as
 
 ![health-checker](./punto_I/health_checker.png)
 
-## Rolling with additional batch
+## Estrategia de despliegue Rolling with additional batch
 
 ### Punto 2a
 
@@ -134,7 +134,7 @@ Este tipo de despliegue crea lotes (batches) del tamaño previamente definido, g
 En conclusión, esta estrategia ofrece la gran ventaja de evitar tiempos de indisponibilidad durante el proceso de actualización. Además, proporciona flexibilidad en la configuración de los lotes, permitiendo definir su tamaño tanto de forma fija como mediante un porcentaje específico del total de instancias del entorno.
 
 
-## Estraegia de despliegue Rolling
+## Estrategia de despliegue Rolling
 
 A continuación, se va a explicar la estrategia de despliegue Rolling (Continua, como aparece en AWS en español), aplicada al proyecto desplegado en el recurso AWS Elastic Beanstlack. 
 
@@ -164,8 +164,6 @@ La primera es ver el estado de las instancias desplegadas en la consola de AWS.
 ![instancias ok](./rolling/rolling-instancias-ok.png)
 
 Acá podemos ver el estado de cada una de las instancias y si esta pudo ser desplegada correctamente. De igual forma, podemos ver los logs de la aplicación para corroborar que se desplegó correctamente. 
-
- 
 
 Lo segundo es validar por el dominio asignado al entorno de Elastic Beanstalk, que se puede acceder a las instancias, eso se puede hacer fácilmente por el endpoint dispuesto para validar el estado del despliegue:
 ```
@@ -206,7 +204,7 @@ Esta estrategia de despliegue garantiza que no haya una indisponibilidad del ser
 
 Sin embargo, algo que se nota del despliegue, es que hay momentos en los que conviven ambas versiones de la aplicación. Lo cual puede ser una ventaja, ya que, si en algún punto se introduce un error en la nueva versión, si se detecta antes de terminar el despliegue, se puede deshacer el despliegue para que quede la versión previa.
 
-## Estraegia de despliegue all at once
+## Estrategia de despliegue All at once
 
 A continuación, se va a explicar la estrategia de despliegue All at once. 
 
