@@ -205,3 +205,74 @@ A partir de una revisión previa al despliegue y una posterior al mismo, se enco
 Esta estrategia de despliegue garantiza que no haya una indisponibilidad del servicio en ningún momento, ya que, si se configura correctamente la cantidad de instancias a actualizar a la vez, siempre habrá instancias disponibles. 
 
 Sin embargo, algo que se nota del despliegue, es que hay momentos en los que conviven ambas versiones de la aplicación. Lo cual puede ser una ventaja, ya que, si en algún punto se introduce un error en la nueva versión, si se detecta antes de terminar el despliegue, se puede deshacer el despliegue para que quede la versión previa.
+
+## Estraegia de despliegue all at once
+
+A continuación, se va a explicar la estrategia de despliegue All at once. 
+
+Para realizar la configuración de la estrategia de despliegue en el proyecto, como se menciona anteriormente, se configura el archivo app.config con la siguiente información: 
+
+```
+aws:elasticbeanstalk:command: 
+    DeploymentPolicy: AllAtOnce 
+```
+
+### 2.a Instancias utilizadas y Estado Inicial
+
+Inicialmente observamos que la aplicación está desplegada en su versión inicial (1.0)
+
+![entorno_v1.0](./all_at_once/entorno_v1.0.png)
+
+Se encuentra con tres instancias EC2 desplegadas, en estado saludable 
+
+![instancias_v1.0](./all_at_once/intancias_v1.0.png)
+
+Adicionalmente verificamos que la aplicación está disponible enviando una petición de postman al dominio del entorno
+
+![response_v1.0](./all_at_once/response_v1.0.png)
+
+
+### 2.b Ejecución del despliegue y confirmación
+
+El despliegue de la nueva versión (1.1) se inicia a las 7:45:49 pm tal como se ve en el registro de eventos de la aplicación.
+
+![eventos_update](./all_at_once/eventos_update.png)
+
+### 2.c Tiempo de ejecución
+
+Como se puede confirmar en la imagen del punto 2.c. El proceso de actualización tomó un total de 2 minutos y 44 segundos, la secuencia se puede apreciar en la imagen pero los principales enventos son:
+
+* A los 45 segundos del lanzamiento el estado de la aplicación cambia de "OK" a "Info"
+* A los 63 segundos del lanzamiento, se confirma el despliegue de las instancias EC2
+* 2 minutos y 44 segundos después del lanzamiento se confirma que el estado de la aplicación es nuevamente "ok" y se indica que la actualización lanzada hace 77 segundos tomó 55 sengudos en total.
+
+### 2.d Instancias sobre las que se realizó el despliegue
+
+En la siguiente imagen se puede apreciar que la actualización de versión se realiza sobre las mismas instancias de la versión anterior. Pueden validarse los siguientes detalles: 
+
+* El id de las instancia es el mismo que en la imagen del punto 2.a es decir el correspondiente a la versión 1.0
+* Se puede apreciar que al momento de tomar el pantallazo se confirma que la actualización se desplegó hace 53 segundos, pero la instancia lleva 59 minutos en ejecución.
+* El id de implementación es 3, es decir una implementación por encima de la versión 1.0 mostrada en la imagen 2.a
+* Notese que todas las actualizaciónes se dieron "al tiempo" pero con algunos segundos de diferencia.
+
+![instancias_v1.1](./all_at_once/intancias_v1.1.PNG)
+
+
+### 2.f Evidencias de la implementación de la nueva versión
+
+Podemos apreciar que la versión 1.1 ya se encuentra desplegada y a las 7:53 pm, 8 minutos después del lanzamiento de la actualización se envía una nueva petición a postman la cual confirma el buen estado de salud de la app
+
+![entorno_v1.1](./all_at_once/entorno_v1.1.PNG)
+
+![response_v1.1](./all_at_once/response_v1.1.PNG)
+
+
+### 2.g Hallazgos
+
+Durante la implementación de esta estrategia de despliegue encontramos que todo se ejecuta de acuerdo a lo esperado. Se da una pequeña interrupción de las instancias cambiando el estado de la aplicación y unos pocos segundos después se confirma el despliegue.
+
+Un punto que llama la atención en esta implementación es que pese a que uno esperaría una breve interrupción de la salud del servicio mientras los contenedores se están actualizando, esto no es perceptible (por lo menos con el tamaño actual de la app y con la forma de verificación  utilizada.)
+
+Se puede ver que los healtcheck disparados durante el proceso de despliegue de la versión (tanto los propios de AWS como dos disparados desde Postman) arrojan siempre status 200 por lo que no es apreciable, como se dijo, una interrupción en el servicio.
+
+![log_health](./all_at_once/log_health.PNG)
