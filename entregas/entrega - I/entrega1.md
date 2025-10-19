@@ -318,3 +318,9 @@ Immutable deployment policy enabled. Launching one instance with the new setting
 
 ### 2.g Hallazgos
 
+## Enlaces de la entrega
+
+- GitHub: https://github.com/andrade1403/devops.git
+- Workspace Postman: https://documenter.getpostman.com/view/49127146/2sB3QMLpC6
+- Video sustentación: https://uniandes-my.sharepoint.com/:v:/g/personal/d_andrades_uniandes_edu_co/EQypg7enhalPvG-XbDz7878BoZwUNAdskUu2h7HyieGK2A
+
