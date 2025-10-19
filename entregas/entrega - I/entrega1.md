@@ -276,3 +276,47 @@ Un punto que llama la atención en esta implementación es que pese a que uno es
 Se puede ver que los healtcheck disparados durante el proceso de despliegue de la versión (tanto los propios de AWS como dos disparados desde Postman) arrojan siempre status 200 por lo que no es apreciable, como se dijo, una interrupción en el servicio.
 
 ![log_health](./all_at_once/log_health.png)
+
+## Inmutable
+
+A continuación, se va a explicar la estrategia de despliegue Inmutable. 
+
+Para realizar la configuración de la estrategia de despliegue en el proyecto, como se menciona anteriormente, se configura el archivo app.config con la siguiente información: 
+
+```
+aws:elasticbeanstalk:command:
+    DeploymentPolicy: Immutable
+```
+
+### 2.a Instancias utilizadas y Estado Inicial
+
+Inicialmente observamos que la aplicación está desplegada  donde encuentra tres instancias EC2 desplegadas, en estado saludable 
+
+![entorno_inicial](./Inmutable/entorno_inicial.png)
+
+Cargamos la versión inicial (1.0)
+
+![cargue_app1](./Inmutable/cargue_app1.png)
+
+Desplegamos la versión inicial (1.0)
+
+![implementacion_app1](./Inmutable/implementacion_app1.png)
+
+Vemos que la política esta activa 	
+Immutable deployment policy enabled. Launching one instance with the new settings to verify health.
+
+
+### 2.b Ejecución del despliegue y confirmación
+
+
+### 2.c Tiempo de ejecución
+
+
+### 2.d Instancias sobre las que se realizó el despliegue
+
+
+### 2.f Evidencias de la implementación de la nueva versión
+
+
+### 2.g Hallazgos
+
