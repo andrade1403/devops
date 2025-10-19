@@ -98,7 +98,7 @@ A continuación, se presenta la secuencia del proceso de despliegue al momento d
 #### **Instancias EC2 a eliminar**
 ![remove](./rolling_add_batch/remove_ec2.png)
 
-#### **Estado de instancias viejas y nuevas**
+#### **Estado de instancias viejas y nuevas (total 6)**
 ![state](./rolling_add_batch/state.png)
 
 ### Punto 2b
@@ -275,48 +275,42 @@ Se puede ver que los healtcheck disparados durante el proceso de despliegue de l
 
 ![log_health](./all_at_once/log_health.png)
 
-## Inmutable
+## Estrategia de despliegue Immutable
 
-A continuación, se va a explicar la estrategia de despliegue Inmutable. 
+### Punto 2a
 
-Para realizar la configuración de la estrategia de despliegue en el proyecto, como se menciona anteriormente, se configura el archivo app.config con la siguiente información: 
+En cuanto a la cantidad de instancias utilizadas, se configuró un mínimo de tres instancias EC2, las cuales son gestionadas por el Elastic Load Balancer (ELB) para garantizar la disponibilidad del servicio.
+
+Durante la actualización de la aplicación, al implementar una nueva versión del código, se configuró la política de despliegue Immutable, definida en el archivo de configuración de Elastic Beanstalk de la siguiente manera:
 
 ```
 aws:elasticbeanstalk:command:
     DeploymentPolicy: Immutable
 ```
 
-### 2.a Instancias utilizadas y Estado Inicial
+Esta configuración establece que el despliegue se ejecutará reemplazando gradualmente las instancias antiguas por nuevas instancias que ejecutan la versión más reciente de la aplicación. Durante este proceso, la política de despliegue genera un grupo de Auto Scaling temporal, donde se lanza inicialmente una instancia EC2 de prueba.
 
-Inicialmente observamos que la aplicación está desplegada  donde encuentra tres instancias EC2 desplegadas, en estado saludable 
+El propósito de esta instancia es validar su estado de salud mediante el health checker configurado y comprobar que el nuevo Elastic Load Balancer (ELB) enruta correctamente el tráfico. Una vez estas condiciones se cumplen, Elastic Beanstalk despliega las instancias EC2 restantes hasta reemplazar el total de instancias que habían respetando el mínimo y máximo definido en el ELB.
 
-![entorno_inicial](./Inmutable/entorno_inicial.png)
+En consecuencia, durante el proceso de despliegue coexistieron tres instancias del versionamiento anterior y tres instancias nuevas, completando así el proceso de despliegue Immutable.
 
-Cargamos la versión inicial (1.0)
+#### **ELB temporal y primera EC2**
 
-![cargue_app1](./Inmutable/cargue_app1.png)
+A continuación, se muestra cómo el ambiente detectó una actualización de tipo Immutable, creando un ELB temporal y una nueva instancia EC2 que superó los health checks, quedando finalmente incorporada al entorno actualizado:
 
-Desplegamos la versión inicial (1.0)
+![temporal](./Inmutable/despliegue.png)
 
-![implementacion_app1](./Inmutable/implementacion_app1.png)
+#### **Despliegue del resto de instancias EC2**
 
-Vemos que la política esta activa 	
-Immutable deployment policy enabled. Launching one instance with the new settings to verify health.
+A continuación, se muestra cómo Elastic Beanstalk lanzó el resto de las instancias EC2, las cuales superaron los health checks, luego fueron desvinculadas del ELB temporal y añadidas al ELB principal. Posteriormente, el sistema eliminó las instancias antiguas y el ELB temporal, completando así el despliegue de la nueva versión del código y la actualización exitosa del entorno de Beanstalk.
 
+![nuevas](./Inmutable/adicion_1.png)
 
-### 2.b Ejecución del despliegue y confirmación
+![final](./Inmutable/adicion.png)
 
+#### **Estado de instancias viejas y nuevas (total 6)**
 
-### 2.c Tiempo de ejecución
-
-
-### 2.d Instancias sobre las que se realizó el despliegue
-
-
-### 2.f Evidencias de la implementación de la nueva versión
-
-
-### 2.g Hallazgos
+![ec2](./Inmutable/ec2.png)
 
 ## Enlaces de la entrega
 
