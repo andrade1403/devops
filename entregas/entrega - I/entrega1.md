@@ -312,6 +312,34 @@ A continuación, se muestra cómo Elastic Beanstalk lanzó el resto de las insta
 
 ![ec2](./Inmutable/ec2.png)
 
+### Punto 2b
+
+Para validar que el despliegue se encontraba en ejecución correctamente, se verificó el estado del aplicativo desde la consola de AWS Elastic Beanstalk, donde se mostró el siguiente mensaje:
+
+![validacion](./Inmutable/funcional.png)
+
+Este mensaje indica que el entorno pasó de un estado “Info” a “OK”, confirmando que el despliegue se completó satisfactoriamente y que el ambiente estaba operativo y listo para recibir peticiones.
+
+### Punto 2c
+
+Como se pudo evidenciar en la foto anterior el despliegue se demoró aproximadamente 18 minutos. Empezó a las 7:16:01 (como se puede ver en la sección ELB temporal y primera EC2) y terminó a las 7:35:28.
+
+### Punto 2d
+
+En este despliegue se utilizaron nuevas instancias EC2, dado que se empleó una estrategia de implementación de tipo Immutable.
+
+Una vez las nuevas instancias se encuentran completamente operativas, las instancias antiguas son finalizadas de manera controlada en un ELB temporal y verificando health checks. Por tanto, el despliegue se ejecutó sobre nuevas instancias.
+
+### Punto 2e
+
+En cada punto previo se adjuntaron los pantallazos de AWS con los resultados del despliegue.
+
+### Punto 2f
+
+Este tipo de despliegue presenta la ventaja de que, para gestionar las versiones de código, genera nuevos recursos temporales, como un Elastic Load Balancer (ELB) adicional. Además, no lanza todas las instancias requeridas simultáneamente: primero despliega una instancia EC2 de validación, con la cual verifica que los health checks sean satisfactorios y que el enrutamiento del ELB funcione correctamente. Solo después de superar estas validaciones, Elastic Beanstalk lanza las nuevas instancias en el ELB principal.
+
+Sin embargo, la principal desventaja de esta estrategia es el tiempo de despliegue, que en este caso fue de aproximadamente 18 minutos. Este comportamiento es esperable, ya que el proceso implica crear nuevos recursos, verificar su estado y posteriormente migrarlos al entorno principal, lo que incrementa la duración en comparación con otras estrategias de despliegue más directas.
+
 ## Enlaces de la entrega
 
 - GitHub: https://github.com/andrade1403/devops.git
