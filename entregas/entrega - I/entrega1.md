@@ -255,16 +255,16 @@ En la siguiente imagen se puede apreciar que la actualización de versión se re
 * El id de implementación es 3, es decir una implementación por encima de la versión 1.0 mostrada en la imagen 2.a
 * Notese que todas las actualizaciónes se dieron "al tiempo" pero con algunos segundos de diferencia.
 
-![instancias_v1.1](./all_at_once/intancias_v1.1.PNG)
+![instancias_v1.1](./all_at_once/intancias_v1.1.png)
 
 
 ### 2.f Evidencias de la implementación de la nueva versión
 
 Podemos apreciar que la versión 1.1 ya se encuentra desplegada y a las 7:53 pm, 8 minutos después del lanzamiento de la actualización se envía una nueva petición a postman la cual confirma el buen estado de salud de la app
 
-![entorno_v1.1](./all_at_once/entorno_v1.1.PNG)
+![entorno_v1.1](./all_at_once/entorno_v1.1.png)
 
-![response_v1.1](./all_at_once/response_v1.1.PNG)
+![response_v1.1](./all_at_once/response_v1.1.png)
 
 
 ### 2.g Hallazgos
@@ -275,4 +275,4 @@ Un punto que llama la atención en esta implementación es que pese a que uno es
 
 Se puede ver que los healtcheck disparados durante el proceso de despliegue de la versión (tanto los propios de AWS como dos disparados desde Postman) arrojan siempre status 200 por lo que no es apreciable, como se dijo, una interrupción en el servicio.
 
-![log_health](./all_at_once/log_health.PNG)
+![log_health](./all_at_once/log_health.png)
