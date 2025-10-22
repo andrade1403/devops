@@ -23,9 +23,10 @@ application.config['JWT_HEADER_TYPE'] = 'Bearer'
 application.config['JWT_ACCESS_TOKEN_EXPIRES'] = 3600
 
 #Inicializamos la base de datos
-with application.app_context():
-    db.init_app(application)
-    db.create_all()
+if not application.config.get('TESTING'):
+    with application.app_context():
+        db.init_app(application)
+        db.create_all()
 
 #Habilitamos CORS
 CORS(application)
