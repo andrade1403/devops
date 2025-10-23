@@ -1,7 +1,7 @@
 import pytest
 from flask import Flask
 from flask_jwt_extended import JWTManager
-from blacklist_app.app.api.api import BlacklistRegister
+from app.api.api import BlacklistRegister
 
 @pytest.fixture
 def app():
@@ -16,7 +16,7 @@ def test_blacklist_register_campos_faltantes(app, mocker):
     #Mockeamos la verificacion del JWT para que siempre pase
     mocker.patch('flask_jwt_extended.view_decorators.verify_jwt_in_request')
 
-    #Simulamos un request JSON con solo "email"
+    #Simulamos un request JSON
     with app.test_request_context(
         '/v1/blacklists',
         method = 'POST',
@@ -38,7 +38,7 @@ def test_blacklist_register_email_vacio(app, mocker):
     #Mockeamos la verificacion del JWT para que siempre pase
     mocker.patch('flask_jwt_extended.view_decorators.verify_jwt_in_request')
 
-    #Simulamos un request JSON con solo "email"
+    #Simulamos un request JSON
     with app.test_request_context(
         '/v1/blacklists',
         method = 'POST',
@@ -61,7 +61,7 @@ def test_blacklist_register_appId_vacio(app, mocker):
     #Mockeamos la verificacion del JWT para que siempre pase
     mocker.patch('flask_jwt_extended.view_decorators.verify_jwt_in_request')
 
-    #Simulamos un request JSON con solo "email"
+    #Simulamos un request JSON
     with app.test_request_context(
         '/v1/blacklists',
         method = 'POST',
@@ -84,7 +84,7 @@ def test_blacklist_register_invalid_email(app, mocker):
     #Mockeamos la verificacion del JWT para que siempre pase
     mocker.patch('flask_jwt_extended.view_decorators.verify_jwt_in_request')
 
-    #Simulamos un request JSON con solo "email"
+    #Simulamos un request JSON
     with app.test_request_context(
         '/v1/blacklists',
         method = 'POST',
@@ -107,7 +107,7 @@ def test_blacklist_register_invalid_appId(app, mocker):
     #Mockeamos la verificacion del JWT para que siempre pase
     mocker.patch('flask_jwt_extended.view_decorators.verify_jwt_in_request')
 
-    #Simulamos un request JSON con solo "email"
+    #Simulamos un request JSON
     with app.test_request_context(
         '/v1/blacklists',
         method = 'POST',
@@ -130,7 +130,7 @@ def test_blacklist_register_blockedreason_mayor_que_255(app, mocker):
     #Mockeamos la verificacion del JWT para que siempre pase
     mocker.patch('flask_jwt_extended.view_decorators.verify_jwt_in_request')
 
-    #Simulamos un request JSON con solo "email"
+    #Simulamos un request JSON
     with app.test_request_context(
         '/v1/blacklists',
         method = 'POST',
@@ -148,4 +148,118 @@ def test_blacklist_register_blockedreason_mayor_que_255(app, mocker):
         assert status == 400
         assert response == {
             'msg': 'El campo blockedReason no puede exceder 255 caracteres'
+        }
+
+def test_blacklist_register_email_ya_en_blacklist(app, mocker):
+    #Mockeamos la verificacion del JWT para que siempre pase
+    mocker.patch('flask_jwt_extended.view_decorators.verify_jwt_in_request')
+
+    #Respuesta falsa para simular que el email ya existe en la blacklist
+    fake_response = {'email': 'test@example.com', 'found': True, 'blockedReason': 'Spam'}
+
+    #Mockeamos el metodo getEmailFromBlacklist para simular que el email ya existe
+    mocker.patch('app.services.blacklist_crud.BlacklistCRUD.getEmailFromBlacklist', return_value = fake_response)
+
+    #Simulamos un request JSON
+    with app.test_request_context(
+        '/v1/blacklists',
+        method = 'POST',
+        json = {'email': 'test@example.com', 'appId': '123e4567-e89b-12d3-a456-426614174000'},
+    ):
+
+        #Importamos la clase BlacklistRegister
+        resource = BlacklistRegister()
+
+        #Llamamos el metodo post a probar la validacion de email vacio
+        response, status = resource.post()
+
+        #Salidas esperadas
+        assert status == 412
+        assert response == {
+            'msg': 'El email ya se encuentra en la lista negra'
+        }
+
+def test_blacklist_register_no_reason(app, mocker):
+    #Mockeamos la verificacion del JWT para que siempre pase
+    mocker.patch('flask_jwt_extended.view_decorators.verify_jwt_in_request')
+
+    #Respuesta falsa para simular que el email ya existe en la blacklist
+    fake_duplicate = {'email': 'test@example.com', 'found': False}
+
+    #Mockeamos el metodo getEmailFromBlacklist para simular que el email ya existe
+    mocker.patch('app.services.blacklist_crud.BlacklistCRUD.getEmailFromBlacklist', return_value = fake_duplicate)
+
+    #Respuesta fake para traer la ip
+    fake_ip_address = {
+        'email': 'test@example.com', 
+        'appId': '123e4567-e89b-12d3-a456-426614174000',
+        'ipAddress': '192.168.1.1'
+    }
+
+    #Mockeamos el metodo getIpAddress para simular la obtencion de la ip
+    mocker.patch('app.utils.helper.Helper.getIpAddress', return_value = fake_ip_address)
+
+    #Mockeamos el metodo getEmailFromBlacklist para simular que el email no existe
+    mocker.patch('app.services.blacklist_crud.BlacklistCRUD.addEmailToBlacklist', return_value = None)
+
+    #Simulamos un request JSON
+    with app.test_request_context(
+        '/v1/blacklists',
+        method = 'POST',
+        json = {'email': 'test@example.com', 'appId': '123e4567-e89b-12d3-a456-426614174000'},
+    ):
+
+        #Importamos la clase BlacklistRegister
+        resource = BlacklistRegister()
+
+        #Llamamos el metodo post a probar la validacion de email vacio
+        response, status = resource.post()
+
+        #Salidas esperadas
+        assert status == 200
+        assert response == {
+            'msg': 'Usuario agregado a la lista negra exitosamente'
+        }
+
+def test_blacklist_register(app, mocker):
+    #Mockeamos la verificacion del JWT para que siempre pase
+    mocker.patch('flask_jwt_extended.view_decorators.verify_jwt_in_request')
+
+    #Respuesta falsa para simular que el email ya existe en la blacklist
+    fake_response = {'email': 'test@example.com', 'found': False}
+
+    #Mockeamos el metodo getEmailFromBlacklist para simular que el email ya existe
+    mocker.patch('app.services.blacklist_crud.BlacklistCRUD.getEmailFromBlacklist', return_value = fake_response)
+
+    #Respuesta fake para traer la ip
+    fake_ip_address = {
+        'email': 'test@example.com', 
+        'appId': '123e4567-e89b-12d3-a456-426614174000',
+        'blockedReason': 'Spam',
+        'ipAddress': '192.168.1.1'
+    }
+
+    #Mockeamos el metodo getIpAddress para simular la obtencion de la ip
+    mocker.patch('app.utils.helper.Helper.getIpAddress', return_value = fake_ip_address)
+
+    #Mockeamos el metodo getEmailFromBlacklist para simular que el email no existe
+    mocker.patch('app.services.blacklist_crud.BlacklistCRUD.addEmailToBlacklist', return_value = None)
+
+    #Simulamos un request JSON
+    with app.test_request_context(
+        '/v1/blacklists',
+        method = 'POST',
+        json = {'email': 'test@example.com', 'appId': '123e4567-e89b-12d3-a456-426614174000', 'blockedReason': 'Spam'},
+    ):
+
+        #Importamos la clase BlacklistRegister
+        resource = BlacklistRegister()
+
+        #Llamamos el metodo post a probar la validacion de email vacio
+        response, status = resource.post()
+
+        #Salidas esperadas
+        assert status == 200
+        assert response == {
+            'msg': 'Usuario agregado a la lista negra exitosamente'
         }
