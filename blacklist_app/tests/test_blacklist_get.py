@@ -3,7 +3,6 @@ from flask import Flask
 from flask_jwt_extended import JWTManager
 from app.api.api import BlacklistGetEmail
 from unittest.mock import patch
-from app.db.blacklist_db import db
 
 @pytest.fixture
 def app():
