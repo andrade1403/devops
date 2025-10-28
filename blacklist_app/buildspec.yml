@@ -6,7 +6,7 @@ phases:
       - cd blacklist_app
       - python -m pip install --upgrade pip
       - pip install -r requirements.txt
-      - pytest -v
+      - pytest tests/ -v
 artifacts:
   files:
     - '**/*'
