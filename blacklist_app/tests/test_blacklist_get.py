@@ -1,7 +1,7 @@
 import pytest
 from flask import Flask
 from flask_jwt_extended import JWTManager
-from api.api import BlacklistGetEmail
+from app.api.api import BlacklistGetEmail
 from unittest.mock import patch, MagicMock
 
 @pytest.fixture
