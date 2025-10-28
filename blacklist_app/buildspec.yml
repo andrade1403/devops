@@ -3,7 +3,7 @@ version: 0.2
 phases:
   pre_build:
     commands:
-    - cd blacklist_app
+      - cd blacklist_app
       - pip install -r requirements.txt
 artifacts:
   files:
