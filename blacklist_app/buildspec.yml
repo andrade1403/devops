@@ -12,3 +12,5 @@ artifacts:
   base-directory: blacklist_app
   files:
     - '**/*'
+    - '!**/__pycache__/**'
+    - '!**/.pytest_cache/**'
