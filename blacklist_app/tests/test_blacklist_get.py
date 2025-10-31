@@ -15,7 +15,7 @@ def app():
 
 # Test cases for BlacklistGetEmail
 def test_get_email_success(app, mocker):
-    # Mock JWT verification
+    #Mock JWT verification
     mocker.patch('flask_jwt_extended.view_decorators.verify_jwt_in_request')
     
     # Mock the blacklist_crud.getEmailFromBlacklist method
