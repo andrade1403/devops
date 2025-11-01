@@ -84,3 +84,82 @@ Al descargar el artefacto, podemos confirmar que este contiene la aplicación co
 ![zip artefacto](pipeline_IC_exitoso/zip_artefacto.png)
 
 Con esto concluye el ejercicio exitoso de integración continua.
+
+
+## Caso Pipeline Fallido
+
+### Preparación del ejercicio
+
+Para la preparación de este ejercicio, la implementación y configuración del pipeline se mantiene igual que en el caso exitoso. No se realiza ningún cambio con respecto a la configuración vista previamente, ya que para generar un caso fallido se utiliza un enfoque diferente, que será explicado a continuación.
+
+---
+
+Debido a que para que el pipeline se ejecute correctamente, es necesario primero ejecutar los test unitarios de la aplicación, lo cual viene definido por el archivo de especificación de compilación (buildspect.yml), en su etapa de pre-build, la cual sería un requisito para genearar el artefacto:
+
+```yaml
+  pre_build:
+    commands:
+      - cd blacklist_app
+      - export PYTHONPATH=.
+      - python -m pip install --upgrade pip
+      - pip install -r requirements.txt
+      - pytest tests/ -v
+```
+
+Como se aprecia en el anterior blo que, se ejecutan los test de toda la aplicación, en caso de que falle alguno, el proceso de construcción fallaría y no se generaría el artefacto.
+
+Por lo tanto, para generar un caso fallido, lo que se propuso fue hacer que algún commit a la rama main del repositorio, llevará un error en algún test unitario de la aplicación, como se podrá apreciar en el siguiente bloque:
+
+```python
+def test_get_email_success(app, mocker):
+    #Mock JWT verification
+    mocker.patch('flask_jwt_extended.view_decorators.verify_jwt_in_request')
+    
+    # Mock the blacklist_crud.getEmailFromBlacklist method
+    mock_response = {
+        'found': True,
+        'email': 'test@example.com',
+        'appId': '123e4567-e89b-12d3-a456-426614174000',
+        'blockedReason': 'Test reason',
+        'createdAt': '2023-01-01T00:00:00',
+        'ipAddress': '192.168.1.1'
+    }
+    
+    mocker.patch('app.services.blacklist_crud.BlacklistCRUD.getEmailFromBlacklist', return_value=mock_response)
+    
+    with app.test_request_context(
+        '/v1/blacklists/test@example.com',
+        method='GET',
+    ):
+            resource = BlacklistGetEmail()
+            response, status_code = resource.get('test@example.com')
+            
+            assert status_code == 400 # Originalmente se espera un 200
+            assert response == mock_response
+```
+
+En el anterior bloque se muestra el test unitario que se propuso modificar para generar un caso fallido. En este caso, se cambia el valor esperado del status code de 200 a 400, lo cual haría que el test falle y por ende, el pipeline también fallaría al ejecutarlo.
+
+### Ejecución del ejercicio
+
+Para lograr que el pipeline previamente configurado empiece a ejecutarse, se hace un commit al repositorio, ya sea directamente a la rama main o a una rama secundaria y luego haciendo un Pull Request a la rama main.
+
+Podemos validar que una vez hecho el nuevo commit, el pipeline inicia una nueva ejecución encima de la ejecución de la construccion inicial (build pipeline), ahora con el nombre del commit
+
+![commit](pipeline_fallido/commit-test-fallido.PNG)
+
+En la información proporcionada por CodeBuild, podemos ver el detalle de la ejecución y el error por el cual falla la construcción del artefacto.
+
+![error](pipeline_fallido/pasos-build-fallido.PNG)
+
+Igualmente, podemos también ver los logs o registros de la ejecución del pipeline para identificar de mejor el motivo por el cual falla la construcción del artefacto.
+
+![logs](pipeline_fallido/logs-build-fallido.PNG)
+
+Se puede apreciar que el error viene por un fallo en el test unitario que se modificó.
+
+Finalmente, se puede observar que el pipeline queda en estado de fallido, lo cual implica que no se generó el artefacto en S3.
+
+![artefactos](pipeline_fallido/resultado-build-fallido.PNG)
+
+Acá da opciones para reintentar manualmente la ejecución del pipeline, sin embargo, en este caso puntual la única forma de hacer que el pipeline funcione correctamente es ajustando localmente los test que estén fallando y hacer un nuevo commit al repositorio fuente con la correción.
