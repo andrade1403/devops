@@ -84,3 +84,8 @@ Al descargar el artefacto, podemos confirmar que este contiene la aplicación co
 ![zip artefacto](pipeline_IC_exitoso/zip_artefacto.png)
 
 Con esto concluye el ejercicio exitoso de integración continua.
+
+## Links de referencia
+- Video: https://uniandes-my.sharepoint.com/:v:/g/personal/d_andrades_uniandes_edu_co/EfRn_CQDyepFvEIW0HZDxc4BQg2b_xPTo7YzpyHl6BoXoA
+- Repositorio: https://github.com/andrade1403/devops.git
+- Colección POSTMAN: https://documenter.getpostman.com/view/49127146/2sB3QMLpC6
