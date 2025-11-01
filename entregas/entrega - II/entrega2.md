@@ -11,17 +11,11 @@ Esperamos que al finalizar la construcción se genere un artefacto (en el bucket
 
 ### Preparación del ejercicio
 
-Para ejecutar este ejercicio contamos con: 
-
-Un fork del repositorio original de la aplicación *BlacList* en la cuenta de github desde la cual se van a realizar las pruebas. Esto nos facilita la conexión pues genera una copia de la aplicación desde la cual tenemos un rol de propietario.
-
-![fork](pipeline_IC_exitoso/fork_previo.png)
-
-Una conexion con el repositorio de github desde el cual se van a realizar las pruebas. Configurada desde Amazon Codepipeline
+Para ejecutar este ejercicio contamos con una conexion con el repositorio de github desde el cual se van a realizar las pruebas. Configurada desde Amazon Codepipeline
 
 ![conexion](pipeline_IC_exitoso/Conexion_previo.png)
 
-### Ejecucion del ejercicio
+### Configuración de la canalización
 
 Para iniciar con el ejercicio vamos a Amazon Codepipeline, seleccionamos la opción **crear canalización** e iniciamos con la configuración.
 
@@ -49,6 +43,8 @@ Para este ejercicio se omitieron las etapas de pruebas y de despliegue.
 
 Una vez finalizada la configuración, se lanzó la construcción del Pipeline.
 
+### Validación de la canalización
+
 Podemos validar que tanto la habilitación de los recursos como la construcción de la aplicación fueron exitosos.
 
 Nótese que la fuente del recurso es "build pipeline" que es el nombre del commit del repositorio con el que se hizo la construcción inicial.
@@ -75,7 +71,9 @@ Validamos también que se ejecutaron las pruebas nuevamente
 
 ![pruebas commit](pipeline_IC_exitoso/pruebas_commit.png)
 
-podemos confirmar en S3 que se generaron 2 artefactos, uno para la ejecución inicial y uno para el commit realizado
+### Validación de Resultados
+
+Podemos confirmar en S3 que se generaron 2 artefactos, uno para la ejecución inicial y uno para el commit realizado
 
 ![artefactos](pipeline_IC_exitoso/artefactos.png)
 
