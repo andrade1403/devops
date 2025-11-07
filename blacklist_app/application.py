@@ -10,7 +10,7 @@ from app.api.api import BlacklistRegister, BlacklistHealth, BlacklistToken, Blac
 application = Flask(__name__)
 
 #Ponemos configuraciones de la app
-application.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql+psycopg2://proyectogrupo10:proyectogrupo10@database-1.cib0es2qgspd.us-east-1.rds.amazonaws.com:5432/database-1'
+application.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql+psycopg2://proyectogrupo10:proyectogrupo10@terraform-20251107145329166000000001.cifuwoics1ov.us-east-1.rds.amazonaws.com:5432/proyect_db'
 application.config['JWT_SECRET_KEY'] = 'supersecretkey'
 application.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 application.config['PROPAGATE_EXCEPTIONS'] = True
@@ -40,4 +40,4 @@ api.add_resource(BlacklistGetEmail, '/v1/blacklists/<string:email>')
 api.add_resource(BlacklistDelete, '/v1/blacklists/delete')
 
 if __name__ == '__main__':
-    application.run(port = 5000, debug = True)
+    application.run(host = '0.0.0.0', port = 5000, debug = True)
