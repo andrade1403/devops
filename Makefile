@@ -11,7 +11,7 @@ DB_PASSWORD=proyectogrupo10
 # Microservicios
 SERVICES=blacklist-app
 FOLDERS=blacklist_app
-IMAGE_TAG=v4.0.0
+IMAGE_TAG=v1.0.0
 
 export AWS_REGION
 
