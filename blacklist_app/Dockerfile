@@ -18,4 +18,4 @@ ENV PYTHONPATH=/app
 EXPOSE 5000
 
 # Comando por defecto: Gunicorn sirviendo la app
-CMD ["python3", "blacklist_app/application.py"]
+CMD ["python3", "application.py"]
