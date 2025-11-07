@@ -1,22 +1,18 @@
-# Dockerfile (para la API Flask)
 FROM python:3.11-slim
 
-# Evita buffering en logs
-ENV PYTHONUNBUFFERED=1
-
+# Crear y usar el directorio de trabajo
 WORKDIR /app
 
-# Copia requirements y los instala
-# Ajusta la ruta si tu requirements.txt está en otra carpeta
-COPY blacklist_app/requirements.txt /app/requirements.txt
-RUN pip install --no-cache-dir -r /app/requirements.txt
+# Copiar e instalar dependencias
+COPY requirements.txt .
+RUN pip install --upgrade pip
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Copia el código de la app
-COPY blacklist_app /app/blacklist_app
+# Copiar el resto del codigo
+COPY . .
 
-# Variables por defecto (puedes sobreescribir con docker-compose/env)
-ENV FLASK_APP=blacklist_app
-ENV FLASK_ENV=production
+# Asegurar que el directorio de trabajo esta en PYTHONPATH
+ENV PYTHONPATH=/app
 
 # Puerto que usa la app
 EXPOSE 5000
