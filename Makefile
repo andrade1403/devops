@@ -30,6 +30,18 @@ ecr:
 	terraform plan -var-file="../../environments/ecr/terraform.tfvars" -out .tfplan && \
 	terraform apply ".tfplan"
 
+service:
+	aws ecs create-service \
+	--cluster pleasant-zebra-im2r1t \
+	--service-name servicio-bluegreen \
+	--task-definition task-devops:6 \
+	--desired-count 1 \
+	--launch-type FARGATE \
+	--deployment-controller type=CODE_DEPLOY \
+	--load-balancers "targetGroupArn=arn:aws:elasticloadbalancing:us-east-1:387050840675:targetgroup/target-group-1/6104711eb3741aff,containerName=blacklist,containerPort=5000" \
+	--network-configuration "awsvpcConfiguration={subnets=[subnet-0491d15ed08b8838e,subnet-063ff44fd4989f3dd,subnet-09730e73a9d526aa0,subnet-04a9dff01e9f186f2,subnet-0df0997bf3161dbe0,subnet-0268dad6b6b38340d],securityGroups=[sg-04c1275a4b19faea6,sg-093cef7a5c0694b36],assignPublicIp=ENABLED}"
+
+
 # =====================
 # DESTROY
 # =====================
