@@ -10,7 +10,7 @@
           }
         ],
 
-        "image": "<IMAGE1_NAME>",
+        "image": "<   >",
         "essential": true,
         "name": "blacklist"
       }

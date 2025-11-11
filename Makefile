@@ -11,7 +11,7 @@ DB_PASSWORD=proyectogrupo10
 # Microservicios
 SERVICES=blacklist-app
 FOLDERS=blacklist_app
-IMAGE_TAG=v1.0.0
+IMAGE_TAG=latest
 
 export AWS_REGION
 
@@ -33,8 +33,8 @@ ecr:
 service:
 	aws ecs create-service \
 	--cluster pleasant-zebra-im2r1t \
-	--service-name servicio-bluegreen \
-	--task-definition task-devops:6 \
+	--service-name servicio-bluegreen-2 \
+	--task-definition task-devops:7 \
 	--desired-count 1 \
 	--launch-type FARGATE \
 	--deployment-controller type=CODE_DEPLOY \
