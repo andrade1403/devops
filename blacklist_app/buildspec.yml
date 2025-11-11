@@ -14,14 +14,12 @@ phases:
     commands:
       - echo Build started on `date`
       - echo Building the Docker image...
-      - cd blacklist_app    
       - docker build -t blacklist-app:latest .
       - docker tag blacklist-app:latest 387050840675.dkr.ecr.us-east-1.amazonaws.com/blacklist-app:latest
   post_build:
     commands:
       - echo Build completed on `date`
       - echo Pushing the Docker image...
-      - cd blacklist_app
       - docker push 387050840675.dkr.ecr.us-east-1.amazonaws.com/blacklist-app:latest
       - echo Writing Image Definitions file...
       - printf '[{"name":"Container-app-blacklist","imageUri":"387050840675.dkr.ecr.us-east-1.amazonaws.com/blacklist-app:latest"}]' > imagedefinitions.json
