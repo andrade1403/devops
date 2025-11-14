@@ -21,6 +21,28 @@ artifacts:
 
 La línea `base-directory: blacklist_app` indica que los artefactos deben empaquetarse a partir de ese directorio y luego ser almacenados en el bucket s3 generado por defecto. La modificación consiste en eliminar dicha declaración de `base-directory`, de modo que el empaquetado de los artefactos se realice desde la raíz del repositorio. Como resultado, los archivos `taskdef.json` y `appspec.json`, que contienen la definición del task de ECS y del servicio de ECS a crear, no estarán disponibles para CodeDeploy. Esto provocará que la fase de despliegue falle dentro del pipeline.
 
+Al realizar este cambio y hacer push al repositorio, el pipeline se activará automáticamente. El resultado de dicha ejecución se presenta a continuación:
+
+### Fallo pipeline
+![pipeline]![razon](./cd_fallido/pipeline.png)
+
+### Razón fallo pipeline
+![razon](./cd_fallido/razon.png)
+
+Como se puede evidenciar, la causa del fallo fue una excepción generada durante la ejecución del pipeline: este intentó leer el archivo `taskdef.json` generado en el bucket, pero al no encontrarlo, detuvo el proceso y marcó la fase de despliegue como fallida.
+
+Para evidenciar lo anterior, en el bucket s3 generado por defecto se creó el artefacto correspondiente a la última ejecución, registrado a las 5:15 p.m.
+
+### Bucket s3 con artefacto
+![bucket](./cd_fallido/bucket.png)
+
+Al descargar dicho artefacto, se obtuvo el siguiente contenido:
+
+### Artefacto generado
+![artefacto](./cd_fallido/artefacto.png)
+
+Al no encontrarse los archivos `taskdef.json` y `appspec.json`, ni la definición del task ni la del servicio pueden ejecutarse en ECS. En consecuencia, el despliegue continuo falla durante su implementación.
+
 ## Links de referencia
 - Video: https://uniandes-my.sharepoint.com/:v:/g/personal/d_andrades_uniandes_edu_co/IQBlmYsNVJ2ET4UO-x876HC_AeFuXthqIUK6OkAAU8c28p4
 - Repositorio: https://github.com/andrade1403/devops.git
