@@ -20,7 +20,7 @@ export AWS_REGION
 # =====================
 rds:
 	cd terraform/stacks/rds && \
-	terraform init -backend-config="../../environments/rds/backend.tfvars" && \
+	terraform init -backend-config="../../environments/rds/backend.tfvars" -reconfigure && \
 	terraform plan -var-file="../../environments/rds/terraform.tfvars" -out .tfplan && \
 	terraform apply ".tfplan"
 
