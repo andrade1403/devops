@@ -40,4 +40,5 @@ api.add_resource(BlacklistGetEmail, '/v1/blacklists/<string:email>')
 api.add_resource(BlacklistDelete, '/v1/blacklists/delete')
 
 if __name__ == '__main__':
-    application.run(host = '0.0.0.0', port = 5000, debug = True)
+    port = int(os.environ.get("PORT", 5000))
+    application.run(host='0.0.0.0', port=port, debug=True)

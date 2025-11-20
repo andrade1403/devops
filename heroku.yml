@@ -1,0 +1,6 @@
+build:
+  docker:
+    web: ./blacklist_app/Dockerfile
+
+run:
+  web: python3 application.py

@@ -75,6 +75,17 @@ docker-push-all:
 # =====================
 # WORKFLOWS COMPLETOS
 # =====================
+heroku-deploy:
+	@echo "Desplegando en Heroku..."
+	git add .
+	git commit -m "Deploy to Heroku"
+	heroku git:remote -a blacklist-app
+	heroku stack:set container -a blacklist-app
+	git push heroku main
+
+# =====================
+# WORKFLOWS COMPLETOS
+# =====================
 
 infra: rds ecr
 images: ecr-login docker-push-all
