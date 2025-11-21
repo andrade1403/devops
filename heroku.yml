@@ -3,4 +3,4 @@ build:
     web: ./blacklist_app/Dockerfile
 
 run:
-  web: python3 application.py
+  web: newrelic-admin run-program python application.py

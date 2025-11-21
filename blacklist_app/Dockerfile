@@ -17,5 +17,8 @@ ENV PYTHONPATH=/app
 # Puerto que usa la app
 EXPOSE 5000
 
+#Conexion con newrelic
+ENTRYPOINT ["newrelic-admin", "run-program"]
+
 # Comando por defecto: Gunicorn sirviendo la app
 CMD ["python3", "application.py"]

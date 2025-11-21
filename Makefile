@@ -73,7 +73,7 @@ docker-push-all:
 	done
 
 # =====================
-# WORKFLOWS COMPLETOS
+# DEPLOY EN HEROKU
 # =====================
 heroku-deploy:
 	@echo "Desplegando en Heroku..."
@@ -86,7 +86,6 @@ heroku-deploy:
 # =====================
 # WORKFLOWS COMPLETOS
 # =====================
-
 infra: rds ecr
 images: ecr-login docker-push-all
 deploy: infra images
