@@ -32,14 +32,14 @@ ecr:
 
 service:
 	aws ecs create-service \
-	--cluster amused-parrot-e9vos5 \
+	--cluster passionate-koala-4zv41l \
 	--service-name servicio-bluegreen \
-	--task-definition task-devops-CD:1 \
+	--task-definition task-devops-relic:1 \
 	--desired-count 1 \
 	--launch-type FARGATE \
 	--deployment-controller type=CODE_DEPLOY \
-	--load-balancers "targetGroupArn=arn:aws:elasticloadbalancing:us-east-1:387050840675:targetgroup/target-group-1/452204c345a560dd,containerName=blacklist,containerPort=5000" \
-	--network-configuration "awsvpcConfiguration={subnets=[subnet-0491d15ed08b8838e,subnet-063ff44fd4989f3dd,subnet-09730e73a9d526aa0,subnet-04a9dff01e9f186f2,subnet-0df0997bf3161dbe0,subnet-0268dad6b6b38340d],securityGroups=[sg-0657d6ee5e0fb3aa1,sg-093cef7a5c0694b36],assignPublicIp=ENABLED}"
+	--load-balancers "targetGroupArn=arn:aws:elasticloadbalancing:us-east-1:387050840675:targetgroup/target-group-1/6619dba65b5b0cc2,containerName=blacklist,containerPort=5000" \
+	--network-configuration "awsvpcConfiguration={subnets=[subnet-0491d15ed08b8838e,subnet-063ff44fd4989f3dd,subnet-09730e73a9d526aa0,subnet-04a9dff01e9f186f2,subnet-0df0997bf3161dbe0,subnet-0268dad6b6b38340d],securityGroups=[sg-0e81737ceb680ee5b,sg-093cef7a5c0694b36],assignPublicIp=ENABLED}"
 
 # =====================
 # DESTROY
