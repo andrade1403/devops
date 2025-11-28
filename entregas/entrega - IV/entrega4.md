@@ -32,23 +32,104 @@ La petición puede ser aleatoriamente una petición correcta o una petición con
 
 ![test](./images/test.PNG)
 
+Inmediatamente después de creado el email en la lista negra, este es consultado, así logramos que la petición abarque ambas funcionalidades de la Blacklist.
+
 Finalmente se apunta al balanceador de carga y se dispara un conjunto de peticiones en bucle (en este caso mil quinientas)
 
 ![test2](./images/test_2.PNG)
+
 
 Los resultados de la prueba los veremos a continuación.
 
 ## 1. Capacidades de monitoreo de desempeño a nivel de aplicación
 
-![](./images)
-![](./images)
-![](./images)
-![](./images)
-![](./images)
-![](./images)
-![](./images)
-![](./images)
+Al abrir el servicio de monitoreo de la aplicación en New Relic lo primero que observamos es la sección "Summary". Esta sección cuenta con los gráficos más importantes del monitoreo: Tiempo de respuesta, Rendimiento, Apex Score e Indice de errores.
 
+Aquí podemos ver que para este ejercicio, la aplicación se levantó sobre las 10:00 pm, las pruebas (1500 peticiones aleatorias a la blacklist) se iniciaron sobre las 10:11pm y finalizaron al rededor de las 10:37 pm.
+
+![summary](./images/newrelic_summary.PNG)
+
+Una de las funcionalidades importantes que encontramos en la aplicación es el *View Query* que permite personalizar consultas para ver rangos de tiempo o servicios específicos. Esto es de gran utilidad para poder limpiar los resultados. Por ejemplo en este caso utilizamos la consulta para poder ver únicamente los resultados en el intervalo de tiempo que se realizó la prueba que se está documentando en este ejercicio.
+
+En la siguiente gráfica podemos ver el tiempo de respuesta total de la aplicación, el cual es el resultado de la suma del tiempo de respuesta del microservicio de python y la base de datos de postgres. 
+
+![time response](./images/chart_time_response.PNG)
+
+En la imagen anterior podemos ver que la aplicación está generando constantemente respuestas de 1 milisegundo (esto corresponde al estado de comprobación de salud del servicio). 
+
+También podemos apreciar que durante la ejecución de las 1500 peticiones, la aplicación tuvo un tiempo medio de respuesta medio de 3.5 a 4 milisegundos con un pico de 4.24ms a las 10:21 pm
+
+Ahora ajustando un poco la configuración de la presentación (con las opciones de la esquina inferior izquierda) podemos separar el tiempo de respuesta entre el tiempo de la base de datos (Postgres) y el microservicio (Python), como se ve en la imagen siguiente.
+
+![time response_2](./images/chart_time_response_2.PNG)
+
+### Tiempo de respuesta de la aplicación: 
+
+Enfoncandonos en el tiempo de respuesta de la aplicación, vemos que el microservicio tiene un tiempo de respuesta promedio de 1 ms para la comprobación de estado de salud y que este tiempo de respuesta pasa a 2ms durante la ejecución de peticiones. 
+
+El tiempo de respuesta máximo se registró a las 10:27 pm y fue de 2.73 ms.
+
+![response app](./images/tr_app.PNG)
+
+Otra forma de ver los tiempos de respuesta de la aplicación es a través de la opción "Transactions" la cual desglosa el tiempo de respuesta total entre las transacciones realizadas.
+
+Aquí podemos ver que el 57% del tiempo de respuesta total fue consumido por la transacción de registro (la que ejecuta registros del email en la lista negra)
+
+![transactions](./images/transactions.PNG)
+
+### Tiempo de respuesta de la base de datos
+
+Enfocandonos en la base de datos, vemos que esta no tuvo actividad durante las peticiones de estado de salud (lógicamente) sino unicamente durante la ejecución de las pruebas. 
+
+Tenemos un tiempo de respuesta de entre 1.2 y 1.8 ms. El tiempo de respuesta máximo fue de 1.87 ms.
+
+
+![bd_time](./images/tr_bd.PNG)
+
+Otra forma de ver los tiempos de respuesta de la base de datos (también del microservicio) es a través de la opción "Breakdown Table". Aquí podemos apreciar por ejemplo las diferencias en los tiempos de respuesta de la base de datos dependiendo del tipo de transacción. Vemos que las transacciones de consulta SELECT tiene un tiempo de respuesta mayor (1.8ms promedio) que las instrucciones de escritura COMMIT e INSERT (1.0 y 0.8 ms).
+
+![breakdown table](./images/bd_table.PNG)
+
+## 2. Capacidades de Monitoreo del Apdex
+
+![apdex](./images/apdex.PNG)
+
+## 3. Capacidades de Monitoreo y Registro de Errores
+
+![errores](./images/errores.PNG)
+
+## 4. Capacidades de configuración de Alertas
+
+En New Relic al igual que los reportes de monitoreo, las alertas se pueden configurar como comandos NRQL Query. Sin embargo la aplicación tiene una forma "guiada" de generar estas alertas.
+
+Hay tres métricas por defecto en la opción guiada: El tiempo de respuesta, el rendimiento y el ratio de error. 
+
+![alert config](./images/config_alert.PNG)
+
+Para hacer un ejemplo vamos a tomar la unidad de medida como 1 milisegundo en tiempo de respuesta. 
+
+Y vamos a configurar una alerta estática que se active si la unidad de medida se mantiene por encima de 2 (milisegundos) por más de 1 minuto. 
+
+Nota: También se pueden configurar alertas dinámicas que se disparen no a través de un límite crítico sino a través de una desviación en la unidad de medida.
+
+![alerta estatica](./images/limite.PNG)
+
+La notificación de la alerta se puede configurar al correo electrónico, a Jira, Slack, al Celular, entre otros.
+
+![notificacion](./images/notificacion.PNG)
+
+
+Como ya sabemos, nuestras pruebas de estrés en ejecución, tienen un tiempo de respuesta promedio de 4 segundos. Por lo que bastará para activar nuestra alerta.
+
+Reiniciamos el ciclo de pruebas con la alerta configurada y tras un minuto podemos ver que el summary ya muestra un cambio de estado (hexagono rojo) y un label de "Alertas críticas"
+
+![alert](./images/summary_alert.PNG)
+
+Igualmente, recibimos la notificación en el correo
+
+![notificacion alerta](./images/notificacion_correo.PNG)
+
+Con esto finaliza la documentación del monitoreo continuo.
 
 ## Links de referencia
 - Video: https://uniandes-my.sharepoint.com/:v:/g/personal/d_andrades_uniandes_edu_co/IQAHKH8gq0jfQo1smJmv8KLZASAL56Hb-Y28ffiXBZ6RTmc
