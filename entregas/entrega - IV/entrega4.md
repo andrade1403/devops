@@ -92,11 +92,100 @@ Otra forma de ver los tiempos de respuesta de la base de datos (también del mic
 
 ## 2. Capacidades de Monitoreo del Apdex
 
+### ¿Qué es? 
+
+Se puede definir como un estándar en observabilidad, relacionado con los SLA, que sirve para medir la satisfacción de los usuarios, a partir de los tiempos de respuesta de la aplicación. 
+
+Se clasifica cada respuesta de la aplicación en diferentes categorías, según el tiempo de respuesta de la siguiente forma: 
+
+- Satisfecho: Una respuesta satisfactoria es la que se responde dentro del tiempo establecido en el umbral Apdex. 
+
+- Tolerado: Cuando el tiempo de respuesta de aplicación, es mayor al umbral Apdex, pero menor a 4 veces ese valor, entra en el área de solicitudes toleradas. 
+
+- Frustrado: Cuando el tiempo de respuesta supera 4 veces el valor del umbral, sería una solicitud frustrada. 
+
+A partir de la clasificación anterior, se puede encontrar el valor del Apdex de la aplicación en una ventana de tiempo definida generalmente en minutos. Es importante mencionar que para poder determinar el Apdex, se necesita una aplicación que soporte al menos 100 RPM, para que los resultados sean fieles a la realidad. 
+
+De esta forma, se puede determinar el Apdex con la siguiente fórmula: 
+
+(S + T/2)/Total 
+
+Donde S = número de peticiones satisfechas, T = número de peticiones torelables y Total = número total de peticiones. 
+
+ 
+
+Esto dará un valor entre 0 y 1, donde 0 sería el peor valor y un 100% de peticiones frustradas y 1 sería un 100% de peticiones satisfechas. 
+
+ 
+Teniendo ya una idea de lo que es el Apdex y lo que mide en New Relic, se procederá a explicar la forma de hacerle seguimiento.
+
+Se puede encontrar una gráfica de Apdex, en la sección de APM & Service, en el apartado de SLAs:
+
+![apex sla](./images/apdex_desde_sla.PNG)
+
+También, es posible encontrarlo en el resumen general de la aplicación:
+
+![apdex general](./images/donde_encontrar_apdex.PNG)
+
+Para poder evidenciar la funcionalida de la gráfica, se hizo uso de un script para simular tráfico en la aplicación, de esta forma podemos ver que la gráfica es alimentada con los resultados y se muestra su clasificación:
+
 ![apdex](./images/apdex.PNG)
+
+Como se puede apreciar en la anterior gráfica, inicialmente los tiempos de respuesta eran buenos, pero a medida que se va saturando la aplicación, los tiempos bajan, pero se mantienen en un rango tolerble.
+
+A partir del Apdex, se puede generar alarmas y definir varios parámetros para que se active la alerta. Por ejemplo, se puede configurar que la alerta se active si el Apdex es menor a 0.5 por más de 1 minuto.
+
+![apdex alarm](./images/generar_alarma1.PNG)
+
+![apdex alarm2](./images/generar_alarma2.PNG)
+
 
 ## 3. Capacidades de Monitoreo y Registro de Errores
 
-![errores](./images/errores.PNG)
+### Capacidades de registro y monitoreo de errores 
+
+ 
+A continuación se presenta un análisis de las capacidades de registro (logging) que ofrece New Relic. Para observar estas funcionalidades es necesario generar tráfico hacia la aplicación, de modo que las peticiones queden registradas tanto en los tableros de métricas como en los logs. Para esto se utiliza un script que ejecuta un número definido de solicitudes, incluyendo tanto peticiones exitosas como aquellas que provocan errores en el código. 
+
+Dentro de la sección APM & Services de New Relic, existe una opción que permite visualizar los logs en tiempo real. En esta vista se registran todas las solicitudes realizadas a la aplicación, ofreciendo inicialmente un resumen de cada entrada de log. 
+
+![logs](./images/logs1.PNG)
+
+Como se aprecia en la siguiente imagen, New Relic tiene la capacidad de recopilar los logs generados por la aplicación. Estos registros pueden luego ser consultados o filtrados para obtener información relevante sobre el comportamiento de la aplicación en situaciones específicas.
+
+![logs2](./images/log_detalle1.PNG)
+
+No obstante, al comparar los logs que se imprimen en la consola de la aplicación con los que se ven en New Relic, se observa que las líneas correspondientes al traceback —es decir, la información detallada del error— no aparecen en la plataforma. Esto representa una limitación importante, ya que impide realizar un seguimiento completo del error desde New Relic: se puede ver que ocurrió una falla, pero no acceder fácilmente a su causa. 
+
+![logs3](./images/logs_locales.PNG)
+
+Este comportamiento se debe a que el traceback no está siendo formateado de acuerdo con lo que New Relic espera, lo que causa que la herramienta no pueda asociar ni procesar correctamente esas líneas y, por ende, deje de mostrarlas. 
+
+Lo anterior evidencia la importancia de configurar adecuadamente la emisión de logs en la aplicación, asegurando el uso de niveles apropiados y un formato consistente. Esto no solo facilita el análisis dentro de New Relic, sino también en cualquier otra herramienta de observabilidad utilizada actualmente. 
+
+
+![errores1](./images/errores.PNG)
+
+
+### Errores a nivel de aplicación 
+
+A continuación, se presenta un análisis de las capacidades de monitoreo de errores que ofrece New Relic. Dentro de la sección APM & Services, la plataforma incluye un espacio dedicado específicamente a la observación y gestión de errores de la aplicación. 
+
+![errores](./images/conteo-errores.PNG)
+
+![errores2](./images/porcentaje-errores.PNG)
+
+En esta vista es posible encontrar un gráfico que muestra la cantidad total de errores en una ventana de tiempo determinada, así como el porcentaje de errores ocurridos durante ese mismo periodo. Para validar esta funcionalidad, el script utilizado para generar tráfico hacia la aplicación incluye una lógica que envía peticiones que, de manera aleatoria, producen excepciones. Esto permite comparar el porcentaje de errores provocados por el script con el porcentaje que New Relic reporta en sus gráficos y confirmar que la herramienta está registrando los fallos correctamente. 
+
+Además, New Relic ofrece una vista detallada del traceback completo de cada error, lo cual es especialmente útil para realizar un análisis más profundo y agilizar el proceso de depuración. La herramienta también clasifica los errores según su origen: ya sea por fallas en recursos externos como bases de datos o servicios terceros, o errores generados directamente en el código de la aplicación. Esta categorización resulta muy valiosa porque permite identificar rápidamente problemas de comunicación con servicios externos o fallas internas específicas. 
+
+![errores3](./images/grupo-errores.PNG)
+
+En la parte inferior de la vista se muestran los errores agrupados por tipo. Si el mismo error ocurre varias veces, New Relic lo consolida y lleva un conteo de recurrencias, además de registrar el momento en que fue detectado por primera vez. Esto facilita la identificación de errores persistentes o patrones de fallas. 
+
+![errores4](./images/vista-error-detallado.PNG)
+
+Finalmente, New Relic ofrece opciones para gestionar cada error, como asociarlo a una incidencia en Jira, marcarlo como resuelto o asignarlo a un desarrollador del equipo. Estas funcionalidades integradas ayudan a organizar el flujo de trabajo y mejorar la trazabilidad durante la corrección de errores. 
 
 ## 4. Capacidades de configuración de Alertas
 
@@ -132,6 +221,6 @@ Igualmente, recibimos la notificación en el correo
 Con esto finaliza la documentación del monitoreo continuo.
 
 ## Links de referencia
-- Video: https://uniandes-my.sharepoint.com/:v:/g/personal/d_andrades_uniandes_edu_co/IQAHKH8gq0jfQo1smJmv8KLZASAL56Hb-Y28ffiXBZ6RTmc
-- Repositorio: https://github.com/andrade1403/devops.git
-- Colección POSTMAN: https://documenter.getpostman.com/view/49127146/2sB3QMLpC6
+- [Video](https://uniandes-my.sharepoint.com/:v:/g/personal/d_andrades_uniandes_edu_co/IQAHKH8gq0jfQo1smJmv8KLZASAL56Hb-Y28ffiXBZ6RTmc)
+- [Repositorio](https://github.com/andrade1403/devops.git)
+- [Colección POSTMAN](https://documenter.getpostman.com/view/49127146/2sB3QMLpC6)
